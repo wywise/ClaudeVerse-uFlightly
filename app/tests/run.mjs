@@ -14,7 +14,7 @@ const end = tpl.indexOf('/* ---------- shell ---------- */');
 assert.ok(start > 0 && end > start, 'could not find the core region of the app script');
 const data = (f) => read('app/build/data/' + f);
 const pre = `const AIRPORTS=${data('airports.json')};const TZS=${data('tzs.json')};const ISO=${data('iso.json')};const LOGOS={};const WORLD=null;const SEED="";`;
-const exportNames = 'parseCSV,csvToFlights,tzDuration,airNames,airKey,acFamily,dist,fx,apOf,flightsToICS,merge,estMin,normDate,mapClass,mapSeatType,mapWhy,timeOf,keyOf,uid,AP';
+const exportNames = 'parseCSV,csvToFlights,tzDuration,airNames,airKey,acFamily,dist,fx,apOf,flightsToICS,merge,estMin,normDate,mapClass,mapSeatType,mapWhy,timeOf,keyOf,uid,AP,ACC,loungeCode,mapAccess,flightsToCSV';
 const store = {};
 const ctx = {
   localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
@@ -135,6 +135,24 @@ test('calendar export builds a UTC time for an upcoming flight', () => {
   assert.ok(ics.includes('BEGIN:VCALENDAR') && ics.includes('END:VCALENDAR'));
   assert.ok(ics.includes('DTSTART:20261224T060000Z'), ics);
   assert.ok(ics.includes('SUMMARY:Flight EX 315 TLV to LHR'));
+});
+
+test('lounge visits survive a CSV round trip', () => {
+  T.setFlights([{ id: 'a', date: '2024-05-01', from: 'LHR', to: 'JFK', flightNo: 'EX1', loungeName: 'Test Lounge, Terminal 3', loungeAccess: 1, loungeAt: 'from', cls: 1, why: 1, photos: [] },
+                { id: 'b', date: '2024-05-09', from: 'JFK', to: 'LHR', flightNo: 'EX2', loungeName: 'Arrival Spa', loungeAccess: 3, loungeAt: 'to', cls: 1, why: 1, photos: [] },
+                { id: 'c', date: '2024-06-01', from: 'LHR', to: 'JFK', flightNo: 'EX3', cls: 1, why: 1, photos: [] }]);
+  const list = T.csvToFlights(T.flightsToCSV()).list;
+  assert.equal(list.length, 3);
+  assert.equal(list[0].loungeName, 'Test Lounge, Terminal 3'); assert.equal(list[0].loungeAccess, 1); assert.equal(list[0].loungeAt, 'from');
+  assert.equal(list[1].loungeName, 'Arrival Spa'); assert.equal(list[1].loungeAccess, 3); assert.equal(list[1].loungeAt, 'to');
+  assert.equal(T.loungeCode(list[1]), 'LHR');
+  assert.equal(list[2].loungeName, ''); assert.equal(list[2].loungeAccess, 0);
+});
+
+test('lounge access text maps to the right method', () => {
+  assert.equal(T.mapAccess('Priority Pass / LoungeKey'), 1); assert.equal(T.mapAccess('Airline status'), 2);
+  assert.equal(T.mapAccess('Credit card'), 3); assert.equal(T.mapAccess('Paid entry'), 4);
+  assert.equal(T.mapAccess('Business class ticket'), 5); assert.equal(T.mapAccess('something else'), 6); assert.equal(T.mapAccess(''), 0);
 });
 
 test('the built page has valid JavaScript', () => {
