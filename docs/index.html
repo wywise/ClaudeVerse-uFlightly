@@ -422,46 +422,75 @@ function parseCSV(t){t=t.replace(/^﻿/,'');const rows=[];let row=[],f='',q=fals
 function parseAp(s){s=(s||'').trim();if(!s)return null;let m=s.match(/\(([A-Za-z0-9]{3})\/([A-Za-z0-9]{3,4})\)\s*$/);
   if(m)return(apOf(m[1])||apOf(m[2]))?(apOf(m[1])||apOf(m[2])).iata:m[1].toUpperCase();
   if(/^[A-Za-z]{3}$/.test(s))return s.toUpperCase();
-  if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;return null}
+  if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;
+  const t3=s.toUpperCase().match(/\b([A-Z]{3})\b/);if(t3&&apOf(t3[1]))return t3[1];return null}
 const t2m=s=>{const m=String(s||'').match(/^(\d+):(\d\d)/);return m?(+m[1])*60+(+m[2]):0};
+const normDate=s=>{s=(s||'').trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
+  m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/);if(m){const a=+m[1],b=+m[2];let d,mo;if(a>12){d=a;mo=b}else if(b>12){d=b;mo=a}else{d=a;mo=b}
+    return `${m[3]}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`}return ''};
+const timeOf=s=>{const m=String(s||'').match(/(?:^|[T\s])(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,'0')+':'+m[2]:''};
+const mapClass=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v||1;if(/premium|plus|\+/.test(v))return 4;if(/business|biz|club/.test(v))return 2;if(/first/.test(v))return 3;if(/private|charter/.test(v))return 5;return 1};
+const mapSeatType=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v;return /window/.test(v)?1:/middle/.test(v)?2:/aisle/.test(v)?3:0};
+const mapWhy=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v||1;return /business/.test(v)?2:/crew/.test(v)?3:/other/.test(v)?4:1};
 function csvToFlights(text){
   const rows=parseCSV(text);if(rows.length<2)return{list:[],bad:0};
-  const hd=rows[0].map(h=>h.trim().toLowerCase());const col=n=>hd.indexOf(n);
+  const hd=rows[0].map(h=>h.trim().toLowerCase());
+  const idx=(...ns)=>{for(const n of ns){const i=hd.indexOf(n);if(i>=0)return i}return -1};
+  const C={date:idx('date','flight date','departure date'),fno:idx('flight number','flight','flight no','flight no.','flight #','flightnumber'),
+    from:idx('from','origin','departure airport','dep airport','departure'),to:idx('to','destination','arrival airport','arr airport','arrival'),
+    dep:idx('dep time','departure time','take off (actual)','takeoff (actual)','gate departure (actual)','take off (scheduled)','takeoff (scheduled)','gate departure (scheduled)'),
+    arr:idx('arr time','arrival time','landing (actual)','gate arrival (actual)','landing (scheduled)','gate arrival (scheduled)'),
+    dur:idx('duration','flight time'),air:idx('airline','airline name','carrier'),ac:idx('aircraft','aircraft type name','aircraft type','plane'),
+    reg:idx('registration','tail number','tail','tail #','tail no'),seat:idx('seat number','seat'),seatType:idx('seat type'),cls:idx('flight class','cabin class','class','cabin'),
+    why:idx('flight reason','reason'),note:idx('note','notes','comment'),rating:idx('rating'),trip:idx('trip')};
   const out=[];let bad=0;
   for(const r of rows.slice(1)){
-    const g=n=>{const i=col(n);return i<0?'':(r[i]||'').trim()};
-    const date=g('date').slice(0,10),from=parseAp(g('from')),to=parseAp(g('to'));
-    if(!/^\d{4}-\d\d-\d\d$/.test(date)||!from||!to){bad++;continue}
-    const dep=g('dep time'),arr=g('arr time');const noTimes=dep.startsWith('00:00')&&arr.startsWith('00:00');
-    let al=g('airline'),aname='',aiata='',aicao='';const am=al.match(/^(.*?)\s*\(([^/)]*)\/([^)]*)\)\s*$/);
-    if(am){aname=am[1].trim();aiata=am[2].trim();aicao=am[3].trim()}else aname=al;
-    let ac=g('aircraft').replace(/^\(\s*\)$/,''),acn=ac,acc='';const cm=ac.match(/^(.*?)\s*\(([A-Za-z0-9]+)\)\s*$/);if(cm){acn=cm[1].trim();acc=cm[2]}
-    const seat=g('seat number');let reg=g('registration');if(reg&&(reg===seat||/^\d{1,2}[A-K]$/i.test(reg)))reg='';
-    const num=n=>{const v=parseInt(g(n),10);return isNaN(v)?0:v};
-    const rating=Math.max(0,Math.min(5,parseInt(g('rating'),10)||0));
-    out.push({id:uid(),date,flightNo:g('flight number'),from,to,depTime:noTimes?'':dep.slice(0,5),arrTime:noTimes?'':arr.slice(0,5),
-      duration:t2m(g('duration')),airline:aname,airlineCode:aiata,airlineIcao:aicao,aircraft:acn,aircraftCode:acc,reg,seat,
-      seatType:num('seat type'),cls:num('flight class')||1,why:num('flight reason')||1,note:g('note'),rating,photos:[]});
+    const get=k=>C[k]<0?'':String(r[C[k]]||'').trim();
+    const date=normDate(get('date')),from=parseAp(get('from')),to=parseAp(get('to'));
+    if(!date||!from||!to){bad++;continue}
+    let dep=timeOf(get('dep')),arr=timeOf(get('arr'));if(dep==='00:00'&&arr==='00:00'){dep='';arr=''}
+    let al=get('air'),aname='',aiata='',aicao='';const am=al.match(/^(.*?)\s*\(([^/)]*)\/([^)]*)\)\s*$/);
+    if(am){aname=am[1].trim();aiata=am[2].trim();aicao=am[3].trim()}
+    else if(/^[A-Z0-9]{2}$/.test(al)){aiata=al;const k=AIRLINES.find(a=>a[1]===al);aname=k?k[0]:al;aicao=k?k[2]:''}
+    else{aname=al;const k=AIRLINES.find(a=>a[0].toLowerCase()===al.toLowerCase());if(k){aiata=k[1];aicao=k[2]}}
+    let ac=get('ac').replace(/^\(\s*\)$/,''),acn=ac,acc='';const cm=ac.match(/^(.*?)\s*\(([A-Za-z0-9]+)\)\s*$/);if(cm){acn=cm[1].trim();acc=cm[2]}
+    const seat=get('seat');let reg=get('reg');if(reg&&(reg===seat||/^\d{1,2}[A-K]$/i.test(reg)))reg='';
+    const rating=Math.max(0,Math.min(5,parseInt(get('rating'),10)||0));
+    out.push({id:uid(),date,flightNo:get('fno'),from,to,depTime:dep,arrTime:arr,duration:t2m(get('dur')),airline:aname,airlineCode:aiata,airlineIcao:aicao,
+      aircraft:acn,aircraftCode:acc,reg,seat,seatType:mapSeatType(get('seatType')),cls:mapClass(get('cls')),why:mapWhy(get('why')),note:get('note'),rating,trip:get('trip'),photos:[]});
   }
   return{list:out,bad}}
 const q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
 function flightsToCSV(){
-  const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating'];
+  const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating','Trip'];
   const lab=c=>{const a=apShow(c);return a.name?`${a.city} / ${a.name} (${a.iata}/${a.icao})`:a.iata};
   const t=m=>m?hm(m)+':00':'';
   const rows=[...flights].sort((a,b)=>a.date.localeCompare(b.date)).map(f=>{const x=fx(f);
     return[f.date,f.flightNo,lab(f.from),lab(f.to),f.depTime?f.depTime+':00':'00:00:00',f.arrTime?f.arrTime+':00':'00:00:00',t(x.min),
-      f.airline?`${f.airline} (${f.airlineCode||''}/${f.airlineIcao||''})`:' (/)',f.aircraft?`${f.aircraft} (${f.aircraftCode||''})`:'',f.reg,f.seat,f.seatType,f.cls,f.why,f.note,f.rating||''].map(q2).join(',')});
+      f.airline?`${f.airline} (${f.airlineCode||''}/${f.airlineIcao||''})`:' (/)',f.aircraft?`${f.aircraft} (${f.aircraftCode||''})`:'',f.reg,f.seat,f.seatType,f.cls,f.why,f.note,f.rating||'',f.trip||''].map(q2).join(',')});
   return head.map(q2).join(',')+'\n'+rows.join('\n')+'\n'}
 async function saveFile(name,data){
+  let blocked=false;
   try{const d=window.claude&&await window.claude.use('downloads');
-    if(d){await d.save({filename:name,data});toast('Saved '+name);return true}}catch(e){if(e&&e.code==='declined')return false}
+    if(d){await d.save({filename:name,data});toast('Saved '+name);return true}}catch(e){if(e&&e.code==='declined')return false;blocked=!!(window.claude&&e&&e.code)}
   const mime=/\.json$/.test(name)?'application/json':/\.csv$/.test(name)?'text/csv':/\.png$/.test(name)?'image/png':/\.ics$/.test(name)?'text/calendar':'text/plain';
   const blob=data instanceof Blob?data:new Blob([data],{type:mime});
-  try{const file=new File([blob],name,{type:blob.type||mime});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return true}}catch(e){if(e&&e.name==='AbortError')return false}
-  try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved '+name);return true}catch(e){}
+  if(!blocked){try{const file=new File([blob],name,{type:blob.type||mime});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return true}}catch(e){if(e&&e.name==='AbortError')return false}}
+  if(!blocked){try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved '+name);return true}catch(e){}}
   try{await navigator.clipboard.writeText(typeof data==='string'?data:'');toast('Copied to clipboard instead');return true}catch(e){toast('Could not save the file here');return false}}
+const icsEsc=s=>String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+const icsUtc=ms=>new Date(ms).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+const icsNext=d=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+1);return x.toISOString().slice(0,10).replace(/-/g,'')};
+function flightsToICS(list){
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//uFlightly//EN','CALSCALE:GREGORIAN'];
+  list.forEach(f=>{const a=apShow(f.from),b=apShow(f.to),x=fx(f),A=apOf(f.from);
+    L.push('BEGIN:VEVENT','UID:'+f.id+'@uflightly','DTSTAMP:'+icsUtc(Date.now()));
+    if(f.depTime&&A&&A.tz){const s=localToUtc(f.date,f.depTime,A.tz);L.push('DTSTART:'+icsUtc(s),'DTEND:'+icsUtc(s+Math.max(30,x.min||120)*60000))}
+    else L.push('DTSTART;VALUE=DATE:'+f.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+icsNext(f.date));
+    L.push('SUMMARY:'+icsEsc(`Flight ${fno(f.flightNo)} ${a.iata} to ${b.iata}`.replace(/\s+/g,' ').trim()),'LOCATION:'+icsEsc(a.name?`${a.name} (${a.iata})`:a.iata),
+      'DESCRIPTION:'+icsEsc([f.airline,f.aircraft,f.seat&&'Seat '+f.seat,CLS[f.cls]].filter(Boolean).join(' - ')),'END:VEVENT')});
+  L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n'}
 async function exportJSON(){
   const photos={};for(const f of flights)for(const id of f.photos||[]){const d=await PH.get(id);if(d)photos[id]=d}
   const ok=await saveFile(`uflightly-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'uflightly',version:1,flights,photos,airports:customAp}));
@@ -497,7 +526,7 @@ function render(keep){
   hydrate(m);if(S.tab==='map')mapSetup()}
 
 /* ---------- flights tab ---------- */
-function hay(f){const a=apShow(f.from),b=apShow(f.to);return norm([f.date,f.date.slice(0,4),f.flightNo,a.iata,a.icao,a.city,a.name,a.country,b.iata,b.icao,b.city,b.name,b.country,f.airline,f.airlineCode,f.aircraft,f.aircraftCode,f.reg,f.note,CLS[f.cls]].join(' '))}
+function hay(f){const a=apShow(f.from),b=apShow(f.to);return norm([f.date,f.date.slice(0,4),f.flightNo,a.iata,a.icao,a.city,a.name,a.country,b.iata,b.icao,b.city,b.name,b.country,f.airline,f.airlineCode,f.aircraft,f.aircraftCode,f.reg,f.note,f.trip,CLS[f.cls]].join(' '))}
 function card(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
   return `<button class="fcard" data-act="open" data-id="${f.id}">
    <div class="fc-top">${badge(f)}
@@ -535,9 +564,12 @@ function listHtml(){
     const yH=yrs.map(y=>sec(y,sub(by[y]),desc?by[y]:[...by[y]].reverse())).join('');
     return desc?upH+yH:yH+upH}
   const AN2=airNames(flights);
-  const kf={from:f=>{const a=apShow(f.from);return a.city+' · '+a.iata},to:f=>{const a=apShow(f.to);return a.city+' · '+a.iata},airline:f=>f.airline?(AN2.get(airKey(f))||f.airline):'No airline',aircraft:f=>f.aircraft||'Unknown aircraft'}[S.sort];
+  const kf={from:f=>{const a=apShow(f.from);return a.city+' · '+a.iata},to:f=>{const a=apShow(f.to);return a.city+' · '+a.iata},airline:f=>f.airline?(AN2.get(airKey(f))||f.airline):'No airline',aircraft:f=>f.aircraft||'Unknown aircraft',trip:f=>f.trip||'No trip'}[S.sort];
   const g={};list.forEach(f=>(g[kf(f)]=g[kf(f)]||[]).push(f));
-  const ks=Object.keys(g).sort((a,b)=>a.localeCompare(b));if(S.dir==='desc')ks.reverse();
+  let ks=Object.keys(g);
+  if(S.sort==='trip'){const lt=k=>g[k].reduce((m,f)=>f.date>m?f.date:m,'');ks.sort((a,b)=>lt(b).localeCompare(lt(a)));if(S.dir==='asc')ks.reverse()}
+  else{ks.sort((a,b)=>a.localeCompare(b));if(S.dir==='desc')ks.reverse()}
+  if(S.sort==='trip'&&ks.includes('No trip'))ks=ks.filter(k=>k!=='No trip').concat('No trip');
   return ks.map(k=>sec(k,sub(g[k]),g[k])).join('')}
 function backupBanner(){
   if(!flights.length)return '';const now=Date.now(),last=cfg.lastBackup||0;
@@ -549,7 +581,7 @@ function backupBanner(){
 function vFlights(){
   return `<div class="scroll" id="sc"><div class="wrap"><header class="large"><div class="hrow"><h1>Flights</h1><div style="display:flex;align-items:center;gap:10px">${flights.length?`<div class="seg" data-seg="view" style="margin:0;flex-wrap:nowrap"><button data-v="compact" aria-pressed="${S.view==='compact'}" aria-label="Compact list">${ic('rows')}</button><button data-v="cards" aria-pressed="${S.view==='cards'}" aria-label="Large cards">${ic('cards')}</button></div>`:''}<button class="icon-btn" data-act="add" aria-label="Add a flight">${ic('plus')}</button></div></div>
    ${flights.length?`<label class="search">${ic('search')}<input id="q" type="search" placeholder="Airport, airline, aircraft, year" value="${esc(S.q)}" autocomplete="off" autocapitalize="off"></label>
-   <div class="chips">${[['date','Date'],['from','From'],['to','To'],['airline','Airline'],['aircraft','Aircraft']].map(([k,l])=>`<button data-sort="${k}" aria-pressed="${S.sort===k}">${l}${S.sort===k?(S.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}</div>`:''}</header>
+   <div class="chips">${[['date','Date'],['from','From'],['to','To'],['airline','Airline'],['aircraft','Aircraft'],['trip','Trip']].map(([k,l])=>`<button data-sort="${k}" aria-pressed="${S.sort===k}">${l}${S.sort===k?(S.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}</div>`:''}</header>
    ${backupBanner()}
    <div id="list">${listHtml()}</div></div></div>`}
 
@@ -576,7 +608,7 @@ function removeFlights(list,msg){finishUndo();const ids=new Set(list.map(f=>f.id
   toast(msg,{label:'Undo',ms:8000,run:()=>{const back=UNDO.pending||[];UNDO.pending=null;clearTimeout(UNDO.t);UNDO.t=null;flights.push(...back);persist();render(true);toast(back.length>1?'Flights restored':'Flight restored')}})}
 function confirmDelete(id){actionSheet({title:'Delete this flight?',message:'It will be removed from your log, along with its photos.',actions:[{label:'Delete flight',destructive:true,run:()=>{const f=flights.find(x=>x.id===id);if(f)removeFlights([f],'Flight deleted')}}]})}
 function confirmWipe(){actionSheet({title:'Delete all flights?',message:'This removes every flight and photo from this device. Export a backup first if you might need them.',actions:[{label:'Delete all flights',destructive:true,run:()=>removeFlights([...flights],'All flights deleted')}]})}
-const formVals=()=>{const g=id=>($('#'+id)||{}).value||'';return JSON.stringify([g('f-date'),g('f-airline'),g('f-code'),g('f-no'),g('f-ac'),g('f-code2'),g('f-reg'),g('f-seat'),g('f-dep'),g('f-arr'),g('f-h'),g('f-m'),g('f-note'),D&&D.from,D&&D.to,D&&D.seatType,D&&D.cls,D&&D.why,D&&D.rating,D&&D.photos.join(',')])};
+const formVals=()=>{const g=id=>($('#'+id)||{}).value||'';return JSON.stringify([g('f-date'),g('f-airline'),g('f-code'),g('f-no'),g('f-ac'),g('f-code2'),g('f-reg'),g('f-seat'),g('f-dep'),g('f-arr'),g('f-h'),g('f-m'),g('f-note'),g('f-trip'),D&&D.from,D&&D.to,D&&D.seatType,D&&D.cls,D&&D.why,D&&D.rating,D&&D.photos.join(',')])};
 const formDirty=()=>!!(D&&D._snap&&formVals()!==D._snap);
 function requestCloseForm(){if(formDirty())actionSheet({title:'Discard changes?',message:'Your edits to this flight have not been saved.',actions:[{label:'Discard changes',destructive:true,run:()=>closeSheet()}],cancel:'Keep editing'});else closeSheet()}
 
@@ -591,9 +623,11 @@ function detail(id){
     <div class="perf"></div>
     <div class="pgrid"><div><small>Distance</small><b>${x.km?fmtDist(x.km):'—'}</b></div><div><small>Class</small><b>${CLS[f.cls]||'Economy'}</b></div><div><small>Seat</small><b>${esc(f.seat||'—')}</b></div></div></div>
    ${f.rating?`<div class="card" style="text-align:center;font-size:1.529rem;color:var(--warm-ink);letter-spacing:4px;padding:8px">${'★'.repeat(f.rating)}<span style="color:var(--fill)">${'★'.repeat(5-f.rating)}</span></div>`:''}
-   <div class="grp">${row('Aircraft',[f.aircraft,f.aircraftCode&&'('+f.aircraftCode+')'].filter(Boolean).join(' '))}${row('Registration',f.reg)}${row('Seat type',f.seat||f.seatType?SEAT[f.seatType]:'')}${row('Reason',WHY[f.why])}${row('From',[a.name,a.country].filter(Boolean).join(', '))}${row('To',[b.name,b.country].filter(Boolean).join(', '))}</div>
+   <div class="grp">${row('Trip',f.trip)}${row('Aircraft',[f.aircraft,f.aircraftCode&&'('+f.aircraftCode+')'].filter(Boolean).join(' '))}${row('Registration',f.reg)}${row('Seat type',f.seat||f.seatType?SEAT[f.seatType]:'')}${row('Reason',WHY[f.why])}${row('From',[a.name,a.country].filter(Boolean).join(', '))}${row('To',[b.name,b.country].filter(Boolean).join(', '))}</div>
    ${f.note?`<div class="gt">Notes</div><div class="grp"><div class="row" style="white-space:pre-wrap;display:block;padding:12px 16px">${esc(f.note)}</div></div>`:''}
    ${(f.photos||[]).length?`<div class="gt">Photos</div><div class="photos">${f.photos.map(p=>`<button data-act="photo" data-pid="${p}" aria-label="Open photo"><img data-pid="${p}" alt=""></button>`).join('')}</div>`:''}
+   <button class="btn" data-act="return" data-id="${f.id}" style="margin:8px auto">Add return flight</button>
+   ${isFut(f)?`<button class="btn" data-act="ics" data-id="${f.id}" style="margin:8px auto">Add to Calendar</button>`:''}
    <button class="btn danger" id="delbtn" data-act="del" data-id="${f.id}" style="margin:8px auto">Delete flight</button>
    </div></div>`);
   el.dataset.kind='detail'}
@@ -615,10 +649,11 @@ function pickAirport(cur,cb){
 
 /* add / edit form */
 let D=null;
-function form(id){
+function form(id,pre){
   const f=id?flights.find(x=>x.id===id):null;
   D=f?JSON.parse(JSON.stringify(f)):{id:uid(),date:new Date().toISOString().slice(0,10),flightNo:'',from:'',to:'',depTime:'',arrTime:'',duration:0,airline:'',airlineCode:'',airlineIcao:'',aircraft:'',aircraftCode:'',reg:'',seat:'',seatType:0,cls:1,why:1,note:'',rating:0,photos:[]};
   D._new=!f;D._added={};D._removed=[];
+  if(!f&&pre)Object.assign(D,pre);
   const sel=(k,l,map)=>`<div class="row"><label for="f-${k}">${l}</label><select id="f-${k}" data-k="${k}">${Object.entries(map).map(([v,n])=>`<option value="${v}"${+v===+D[k]?' selected':''}>${n}</option>`).join('')}</select></div>`;
   const hrs=Math.floor((D.duration||0)/60),mins=(D.duration||0)%60;
   const uAl=[...new Set([...flights.map(x=>x.airline),...AIRLINES.map(a=>a[0])].filter(Boolean))],uAc=[...new Set([...flights.map(x=>x.aircraft),...AIRCRAFT].filter(Boolean))];
@@ -626,7 +661,8 @@ function form(id){
    <div class="sbody"><div class="wrap">
    <div class="grp"><div class="row"><label for="f-date">Date</label><input type="date" id="f-date" value="${D.date}"></div>
     <button class="row link" data-act="pick" data-end="from"><span>From</span><span class="val" id="v-from"></span></button>
-    <button class="row link" data-act="pick" data-end="to"><span>To</span><span class="val" id="v-to"></span></button></div>
+    <button class="row link" data-act="pick" data-end="to"><span>To</span><span class="val" id="v-to"></span></button>
+    <div class="row"><label for="f-trip">Trip</label><input id="f-trip" list="dl-trip" placeholder="Optional, e.g. New York 2025" value="${esc(D.trip||'')}" autocomplete="off"></div></div>
    <div class="gt">Airline</div><div class="grp">
     <div class="row"><label for="f-airline">Airline</label><input id="f-airline" list="dl-al" placeholder="Delta Air Lines" value="${esc(D.airline)}" autocomplete="off"></div>
     <div class="row"><label for="f-code">Code</label><input id="f-code" placeholder="DL" maxlength="3" autocapitalize="characters" value="${esc(D.airlineCode)}"></div>
@@ -648,7 +684,7 @@ function form(id){
    <div class="gt">Rating</div><div class="grp"><div class="row"><span>Flight</span><div class="stars" id="stars"></div></div></div>
    <div class="gt">Notes</div><div class="grp"><div class="row area"><textarea id="f-note" placeholder="How was it?">${esc(D.note)}</textarea></div></div>
    <div class="gt">Photos</div><div class="photos" id="phgrid"></div>
-   <datalist id="dl-al">${uAl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-ac">${uAc.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+   <datalist id="dl-trip">${[...new Set(flights.map(x=>x.trip).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-al">${uAl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-ac">${uAc.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
    </div></div>`);
   fel.dataset.kind='form';fillEnds();drawStars();drawPhotos();estHint();D._snap=formVals()}
 function fillEnds(){['from','to'].forEach(k=>{const el=$('#v-'+k);if(!el)return;const a=D[k]?apShow(D[k]):null;el.textContent=a?`${a.iata} · ${a.city}`:'Select'})}
@@ -662,7 +698,7 @@ function drawPhotos(){const g=$('#phgrid');if(!g)return;
 function saveForm(){
   const v=id=>($('#'+id)||{}).value||'';
   D.date=v('f-date');if(!D.date||!D.from||!D.to){toast('Choose a date, origin and destination');return}
-  Object.assign(D,{airline:v('f-airline').trim(),airlineCode:v('f-code').trim().toUpperCase(),flightNo:v('f-no').trim().toUpperCase(),aircraft:v('f-ac').trim(),aircraftCode:v('f-code2').trim().toUpperCase(),reg:v('f-reg').trim().toUpperCase(),seat:v('f-seat').trim().toUpperCase(),depTime:v('f-dep'),arrTime:v('f-arr'),note:v('f-note').trim()});
+  Object.assign(D,{airline:v('f-airline').trim(),airlineCode:v('f-code').trim().toUpperCase(),flightNo:v('f-no').trim().toUpperCase(),aircraft:v('f-ac').trim(),aircraftCode:v('f-code2').trim().toUpperCase(),reg:v('f-reg').trim().toUpperCase(),seat:v('f-seat').trim().toUpperCase(),depTime:v('f-dep'),arrTime:v('f-arr'),note:v('f-note').trim(),trip:v('f-trip').trim()});
   D.duration=(+v('f-h')||0)*60+(+v('f-m')||0);
   if(!D.duration){const td=tzDuration(D);if(td)D.duration=td}
   const k=AIRLINES.find(a=>a[0].toLowerCase()===D.airline.toLowerCase());if(k){if(!D.airlineCode)D.airlineCode=k[1];D.airlineIcao=k[2]}
@@ -697,7 +733,7 @@ function vStats(){
   const rank=fn=>{const m=new Map();X.forEach(x=>{[].concat(fn(x)||[]).filter(Boolean).forEach(k=>m.set(k,(m.get(k)||0)+(byD?x.km:1)))});return[...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0])))};
   const vf=v=>byD?fmtNum(distVal(v))+' '+distUnit():v;
   const AN=airNames(L),air=rank(x=>airKey(x.f)),acs=rank(x=>S.acf==='family'?acFamily(x.f):x.f.aircraft),topAp=rank(x=>[x.f.from,x.f.to]).slice(0,8);
-  const routes=rank(x=>[x.f.from,x.f.to].sort().join(' – ')).slice(0,6),routesF=count(L,f=>[f.from,f.to].sort().join(' – '));
+  const routes=rank(x=>[x.f.from,x.f.to].sort().join(' – ')).slice(0,6),routesF=count(L,f=>[f.from,f.to].sort().join(' – ')),trips=rank(x=>x.f.trip).slice(0,6);
   const cls=count(L,f=>CLS[f.cls]),seats=count(L,f=>f.seatType?SEAT[f.seatType]:''),why=count(L,f=>WHY[f.why]);
   const ys=PF.map(f=>+f.date.slice(0,4)),y0=Math.min(...ys),y1=Math.max(...ys);const per={};PF.forEach(f=>per[f.date.slice(0,4)]=(per[f.date.slice(0,4)]||0)+1);
   const yrs=[];for(let y=y0;y<=y1;y++)yrs.push(y);const mx=Math.max(...Object.values(per));
@@ -736,6 +772,7 @@ function vStats(){
    ${regs.length?`<div class="card"><h3>Tail numbers <small>${regs.length} logged${repeat?` · ${repeat} flown more than once`:''}</small></h3>${bars(regs.slice(0,6),r=>r+(regType(r)?' · '+regType(r):''))}</div>`:''}
    <div class="card"><h3>Airports <small>${byD?'distance':'visits'}</small></h3>${bars(topAp,c=>{const a=apShow(c);return a.iata+' · '+a.city},null,vf)}</div>
    <div class="card"><h3>Routes</h3>${bars(routes,null,null,vf)}</div>
+   ${trips.length?`<div class="card"><h3>Trips <small>${new Set(L.map(f=>f.trip).filter(Boolean)).size}</small></h3>${bars(trips,null,null,vf)}</div>`:''}
    <div class="card"><h3>Countries <small>${ctry.size}</small></h3><div class="tags">${[...ctry.entries()].sort((a,b)=>b[1].n-a[1].n).map(([c,e])=>`<span class="chip">${esc(c)} · ${e.codes.join(', ')}</span>`).join('')||'<span style="color:var(--fg2)">No data</span>'}</div></div>
    <div class="card"><h3>Continents <small>${conts.length} of 7</small></h3>${bars(conts)}</div>
    <div class="card"><h3>Averages</h3>
@@ -763,7 +800,8 @@ function vSettings(){
    <div class="gt">Backup and import</div><div class="grp">
     <button class="row link" data-act="export-json"><span>Export backup (JSON)</span><span class="val">${cfg.lastBackup?'last: '+fmtDate(new Date(cfg.lastBackup).toISOString().slice(0,10)):'never backed up'}</span></button>
     <button class="row link" data-act="export-csv"><span>Export flights (CSV)</span><span class="val">FlightDiary format</span></button>
-    <button class="row link" data-act="import"><span>Import CSV or backup</span><span class="val"></span></button>
+    ${flights.some(isFut)?`<button class="row link" data-act="ics"><span>Export upcoming flights</span><span class="val">for Calendar (.ics)</span></button>`:''}
+    <button class="row link" data-act="import"><span>Import CSV or backup</span><span class="val">FlightDiary, Flighty</span></button>
     ${SEED?`<button class="row link" data-act="seed"><span>Load my FlightDiary export</span><span class="val">${csvToFlights(SEED).list.length} flights</span></button>`:''}</div>
    <div class="hint">Flights are stored only in this browser on this device. Clearing Safari website data deletes them, so export a backup now and then. Importing skips flights that are already in the log.</div>
    <div class="gt">Data</div><div class="grp"><button class="row" id="wipe" data-act="wipe" style="color:var(--bad)"><span>Delete all flights</span></button></div>
@@ -1015,7 +1053,7 @@ document.addEventListener('click',async e=>{
   if(SW&&SW.swiped&&Date.now()-SW.swiped<350){e.preventDefault();return}
   const op=t.closest('.srow.open');if(op&&!t.closest('.swa')){op.classList.remove('open');op.style.setProperty('--tx','0px');SW=null;return}
   const tab=t.closest('[data-tab]');if(tab){setTab(tab.dataset.tab);return}
-  const so=t.closest('[data-sort]');if(so){const k=so.dataset.sort;if(S.sort===k)S.dir=S.dir==='desc'?'asc':'desc';else{S.sort=k;S.dir=k==='date'?'desc':'asc'}render(true);return}
+  const so=t.closest('[data-sort]');if(so){const k=so.dataset.sort;if(S.sort===k)S.dir=S.dir==='desc'?'asc':'desc';else{S.sort=k;S.dir=(k==='date'||k==='trip')?'desc':'asc'}render(true);return}
   const sy=t.closest('[data-sy]');if(sy){S.sy=sy.dataset.sy;render();return}
   const my=t.closest('[data-my]');if(my){M.year=my.dataset.my;M.sel=null;render();return}
   const sg=t.closest('[data-seg] [data-v]');
@@ -1044,6 +1082,8 @@ document.addEventListener('click',async e=>{
     case 'export-json':exportJSON();break;
     case 'export-csv':if(!flights.length){toast('No flights to export yet');break}saveFile(`flights-${new Date().toISOString().slice(0,10)}.csv`,flightsToCSV());break;
     case 'wipe':confirmWipe();break;
+    case 'return':{const f=flights.find(x=>x.id===id);if(!f)break;closeSheet();form(null,{from:f.to,to:f.from,date:f.date,airline:f.airline,airlineCode:f.airlineCode||'',airlineIcao:f.airlineIcao||'',cls:f.cls,why:f.why,trip:f.trip||''});break}
+    case 'ics':{const list=id?flights.filter(x=>x.id===id):flights.filter(isFut);if(!list.length){toast('No upcoming flights');break}saveFile(id?`flight-${list[0].date}.ics`:'uflightly-upcoming.ics',flightsToICS(list));break}
     case 'snooze':cfg.backupSnooze=Date.now()+7*864e5;persistCfg();render(true);break;
     case 'cancelform':requestCloseForm();break;
     case 'goals':goalSheet();break;
