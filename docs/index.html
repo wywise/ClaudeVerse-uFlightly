@@ -360,6 +360,7 @@ const I={
 };
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
 const hue=s=>{let h=0;for(const c of String(s||'?'))h=(h*31+c.charCodeAt(0))%360;return h};
+const fno=s=>String(s||'').replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2');
 const logoOf=f=>LOGOS[String(f.airlineCode||'').toUpperCase()]||null;
 const badge=f=>{const l=logoOf(f);return l?`<img class="al logo" src="${l}" alt="">`:`<span class="al" style="--h:${hue(f.airlineCode||f.airline)}">${esc(f.airlineCode||(f.airline||'✈').slice(0,2).toUpperCase())}</span>`};
 const toast=(m,opt)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('act',!!opt);
@@ -409,7 +410,9 @@ function tzDuration(f){const a=apOf(f.from),b=apOf(f.to);if(!f.depTime||!f.arrTi
 /* @end-core-tz */
 function fx(f){const a=apOf(f.from),b=apOf(f.to);const km=dist(a,b);const has=f.duration>0;const td=has?0:tzDuration(f);
   return{a,b,km,min:has?f.duration:td||estMin(km),est:!(has||td)}}
-const cfg={units:'km',...LS.get('fl.settings',{})};
+const cfg={units:'km',theme:'auto',...LS.get('fl.settings',{})};
+function applyTheme(){try{const r=document.documentElement;if(!cfg.theme||cfg.theme==='auto')delete r.dataset.theme;else r.dataset.theme=cfg.theme}catch(e){}}
+applyTheme();
 const fmtNum=n=>Math.round(n).toLocaleString('en-US');
 const fmtDist=km=>cfg.units==='mi'?fmtNum(km*0.621371)+' mi':fmtNum(km)+' km';
 const distUnit=()=>cfg.units==='mi'?'mi':'km';
@@ -452,6 +455,7 @@ function parseAp(s){s=(s||'').trim();if(!s)return null;let m=s.match(/\(([A-Za-z
   if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;
   const t3=s.toUpperCase().match(/\b([A-Z]{3})\b/);if(t3&&apOf(t3[1]))return t3[1];return null}
 const t2m=s=>{const m=String(s||'').match(/^(\d+):(\d\d)/);return m?(+m[1])*60+(+m[2]):0};
+/* @core-csv */
 const normDate=s=>{s=(s||'').trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
   m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/);if(m){const a=+m[1],b=+m[2];let d,mo;if(a>12){d=a;mo=b}else if(b>12){d=b;mo=a}else{d=a;mo=b}
     return `${m[3]}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`}return ''};
@@ -487,6 +491,7 @@ function csvToFlights(text){
       aircraft:acn,aircraftCode:acc,reg,seat,seatType:mapSeatType(get('seatType')),cls:mapClass(get('cls')),why:mapWhy(get('why')),note:get('note'),rating,trip:get('trip'),photos:[]});
   }
   return{list:out,bad}}
+/* @end-core-csv */
 const q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
 function flightsToCSV(){
   const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating','Trip'];
@@ -562,7 +567,6 @@ function card(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
     <div class="path"><span>${ic('plane')}${fmtDur(x.min,x.est)}</span></div>
     <div class="code r">${esc(b.iata)}<small>${esc(b.city)}</small></div></div>
    <div class="fc-foot">${isFut(f)?`<span class="chip" style="color:var(--warm-ink)">${inDays(f.date)}</span>`:''}${x.km?`<span class="chip">${fmtDist(x.km)}</span>`:''}<span class="chip">${CLS[f.cls]||'Economy'}</span>${f.seat?`<span class="chip">Seat ${esc(f.seat)}</span>`:''}${f.rating?`<span class="chip star">${'★'.repeat(f.rating)}</span>`:''}${(f.photos||[]).length?`<span class="chip">${f.photos.length} photo${f.photos.length>1?'s':''}</span>`:''}</div></button>`}
-const fno=s=>String(s||'').replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2');
 const CLSHORT={1:'',2:'Business',3:'First',4:'E+',5:'Private'};
 function crow(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
   const ch=[isFut(f)?'!'+inDays(f.date):'',x.min?fmtDur(x.min,x.est):'',f.aircraftCode,f.reg,CLSHORT[f.cls],[f.seat,f.seatType?SEAT[f.seatType]:''].filter(Boolean).join(' · '),f.rating?'★'.repeat(f.rating):''].filter(Boolean);
@@ -830,6 +834,7 @@ function vSettings(){
    <div class="gt">Profile</div><div class="grp"><div class="row"><label for="set-name">Name</label><input id="set-name" placeholder="Your name" value="${esc(cfg.name||'')}" autocomplete="given-name"></div></div>
    <div class="hint">Shown on your passport card. English letters work best.</div>
    <div class="gt">Units</div><div class="grp"><div class="row"><span>Distance</span><div class="seg" data-seg="units"><button data-v="km" aria-pressed="${cfg.units==='km'}">Kilometres</button><button data-v="mi" aria-pressed="${cfg.units==='mi'}">Miles</button></div></div></div>
+   <div class="gt">Appearance</div><div class="grp"><div class="row"><span>Theme</span><div class="seg" data-seg="theme"><button data-v="auto" aria-pressed="${(cfg.theme||'auto')==='auto'}">Auto</button><button data-v="light" aria-pressed="${cfg.theme==='light'}">Light</button><button data-v="dark" aria-pressed="${cfg.theme==='dark'}">Dark</button></div></div></div>
    <div class="gt">Backup and import</div><div class="grp">
     <button class="row link" data-act="export-json"><span>Export backup (JSON)</span><span class="val">${cfg.lastBackup?'last: '+fmtDate(new Date(cfg.lastBackup).toISOString().slice(0,10)):'never backed up'}</span></button>
     <button class="row link" data-act="export-csv"><span>Export flights (CSV)</span><span class="val">FlightDiary format</span></button>
@@ -1178,6 +1183,7 @@ document.addEventListener('click',async e=>{
     if(grp==='view'){S.view=v;LS.set('fl.view',v);render(true);return}
     if(grp==='rankby'){S.by=v;render(true);return}
     if(grp==='acf'){S.acf=v;render(true);return}
+    if(grp==='theme'){cfg.theme=v;persistCfg();applyTheme();render(true);return}
     if(grp==='units'){cfg.units=v;persistCfg();render();return}
     if(grp==='mapmode'){M.mode=v;M.t=d3.zoomIdentity;M.sel=null;render();return}
     if(D&&grp in D){D[grp]=+v;$$('[data-seg="'+grp+'"] button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));return}}
@@ -1232,6 +1238,8 @@ $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.targe
 $('#photofile').addEventListener('change',async e=>{const fs=[...e.target.files];e.target.value='';if(!D)return;
   for(const f of fs){const d=await shrink(f);if(d){const id='p'+uid();D._added[id]=d;D.photos.push(id)}}drawPhotos()});
 
+if('serviceWorker' in navigator){let had=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had){had=true;return}toast('A new version is ready',{label:'Reload',ms:20000,run:()=>location.reload()})})}
 render();
 </script>
 

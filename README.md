@@ -34,6 +34,15 @@ Everything is stored locally in your browser. Nothing is sent anywhere. Clearing
 python3 app/build/build.py site
 ```
 
+## Development
+
+```
+node app/tests/run.mjs               # unit tests and a syntax check of the built page
+python3 app/build/build.py site      # rebuild docs/ after editing app/src/app.template.html
+```
+
+Work happens on the `develop` branch. GitHub Actions runs the tests and checks that `docs/` matches the source.
+
 ## Credits
 
 - Airport data: [OpenFlights](https://openflights.org/data.html), available under the [Open Database License](https://opendatacommons.org/licenses/odbl/1-0/).

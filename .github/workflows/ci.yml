@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests and syntax check
+        run: node app/tests/run.mjs
+      - name: Rebuild the site
+        run: python3 app/build/build.py site
+      - name: Check that docs/ and README.md are up to date
+        run: |
+          git diff --exit-code -- docs README.md || {
+            echo "docs/ or README.md is out of date. Run: python3 app/build/build.py site, then commit."
+            exit 1
+          }
