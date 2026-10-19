@@ -1,0 +1,12 @@
+# Files that contain personal flight data. Never commit these.
+private/
+
+# Flight exports and backups
+*.csv
+uflightly-backup*.json
+uflightly-*.json
+
+# macOS and Python noise
+.DS_Store
+__pycache__/
+*.pyc

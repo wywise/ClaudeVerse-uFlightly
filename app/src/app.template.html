@@ -1,0 +1,1007 @@
+<title>uFlightly</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F2F2F7">
+<style>
+/* Layout concept: native-feeling iPhone app. Large titles, inset grouped lists, boarding-pass flight cards, bottom tab bar. */
+:root{
+  --bg:#F2F2F7; --card:#FFFFFF; --fg:#101114; --fg2:#6B6B74; --line:rgba(60,60,67,.14);
+  --accent:#0A74FF; --accent-text:#0060DF; --data:#0E9F8A; --warm-ink:#B34F00; --accent-ink:#FFFFFF; --warm:#F27A0C; --good:#27A653; --bad:#E5362F;
+  --fill:rgba(120,120,128,.13); --hero:#0C2748; --hero2:#1d1a62; --hero-fg:#FFFFFF; --hero-fg2:rgba(255,255,255,.66);
+  --ocean:#E3ECF6; --land:#FFFFFF; --border:#C7D2E0; --grat:rgba(10,40,90,.07);
+  --shadow:0 1px 2px rgba(16,17,20,.05),0 6px 20px rgba(16,17,20,.05);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,sans-serif;
+  --round:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#000000; --card:#1B1C1F; --fg:#F5F5F7; --fg2:#9D9DA6; --line:rgba(255,255,255,.10);
+  --accent:#4C9BFF; --accent-text:#4C9BFF; --data:#3FD0B6; --warm-ink:#FFB36B; --accent-ink:#04101F; --warm:#FF9F43; --good:#46C46F; --bad:#FF6A63;
+  --fill:rgba(120,120,128,.26); --hero:#102240; --hero2:#1b1850; --ocean:#08111E; --land:#1A2536; --border:#2A384D; --grat:rgba(255,255,255,.05);
+  --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000000; --card:#1B1C1F; --fg:#F5F5F7; --fg2:#9D9DA6; --line:rgba(255,255,255,.10);
+  --accent:#4C9BFF; --accent-text:#4C9BFF; --data:#3FD0B6; --warm-ink:#FFB36B; --accent-ink:#04101F; --warm:#FF9F43; --good:#46C46F; --bad:#FF6A63;
+  --fill:rgba(120,120,128,.26); --hero:#102240; --hero2:#1b1850; --ocean:#08111E; --land:#1A2536; --border:#2A384D; --grat:rgba(255,255,255,.05);
+  --shadow:none; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+html{font-size:17px}
+@supports (font:-apple-system-body){html{font:-apple-system-body}}
+body{background:var(--bg);color:var(--fg);font-size:1rem;line-height:1.35;font-family:var(--font);padding-block:0;padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px));overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+input,select,textarea{font:inherit;color:inherit}
+svg{display:block}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+#app{height:100%;display:flex;flex-direction:column}
+#main{flex:1;min-height:0;position:relative}
+.scroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 max(16px,env(safe-area-inset-left,0px)) 112px max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:720px;margin:0 auto}
+
+/* tab bar */
+#tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom,0px));width:min(calc(100% - 32px),400px);z-index:20;display:flex;gap:2px;padding:5px;border-radius:34px;background:color-mix(in srgb,var(--card) 58%,transparent);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);box-shadow:0 8px 30px rgba(0,0,0,.14),inset 0 0 0 .5px color-mix(in srgb,var(--fg) 14%,transparent)}
+#tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 0 6px;border-radius:28px;color:var(--fg2);font-size:0.647rem;font-weight:600;letter-spacing:.01em}
+#tabs button[aria-selected="true"]{color:var(--accent-text);background:var(--fill)}
+#tabs button[aria-selected="true"] .ic{fill:color-mix(in srgb,currentColor 22%,transparent)}
+#edge-b{position:fixed;left:0;right:0;bottom:0;height:120px;z-index:15;pointer-events:none;background:linear-gradient(to top,var(--bg) 25%,transparent)}
+body[data-view="map"] #edge-b{display:none}
+.navbar{position:sticky;top:0;z-index:6;height:44px;margin:0 -16px -44px;display:grid;place-items:center;font:700 1rem var(--round);opacity:0;pointer-events:none;transition:opacity .15s;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 .5px 0 var(--line)}
+.navbar.on{opacity:1}
+/* large header */
+.large{padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:6px}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font:800 1.882rem/1.1 var(--round);letter-spacing:-.02em;margin:10px 0 8px}
+.icon-btn{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.icon-btn.ghost{background:var(--fill);color:var(--fg)}
+.search{display:flex;align-items:center;gap:8px;background:var(--fill);border-radius:12px;padding:0 12px;margin:4px 0 10px;color:var(--fg2)}
+.search .ic{width:18px;height:18px}
+.search input{flex:1;min-width:0;border:0;background:none;padding:10px 0;outline:none;color:var(--fg)}
+.search input::placeholder{color:var(--fg2)}
+
+/* year header */
+.yh{position:sticky;top:44px;z-index:2;display:flex;justify-content:space-between;align-items:baseline;padding:10px 2px 6px;background:var(--bg);font-size:0.765rem;color:var(--fg2)}
+.yh b{font:800 1.176rem var(--round);color:var(--fg);letter-spacing:-.01em}
+
+/* flight card */
+.fcard{display:block;width:100%;background:var(--card);border-radius:18px;padding:14px 16px 12px;margin:0 0 10px;box-shadow:var(--shadow);position:relative}
+.fcard:active{transform:scale(.99)}
+.fc-top{display:flex;align-items:center;gap:8px;font-size:0.735rem;color:var(--fg2)}
+.fc-top .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.al{flex:none;min-width:26px;height:26px;padding:0 5px;border-radius:13px;display:grid;place-items:center;font:700 0.647rem var(--round);color:#fff;background:hsl(var(--h) 52% 42%)}
+.fc-route{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-top:10px}
+.code{font:800 2rem/1 var(--round);letter-spacing:-.02em}
+.code small{display:block;font:500 0.735rem var(--font);letter-spacing:0;color:var(--fg2);margin-top:4px;max-width:34vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.code.r{text-align:right}.code.r small{margin-left:auto}
+.path{position:relative;height:30px;display:flex;align-items:center;justify-content:center;min-width:40px}
+.path::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px dotted color-mix(in srgb,var(--fg2) 55%,transparent)}
+.path span{position:relative;background:var(--card);padding:0 8px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:0.676rem;font-weight:600;color:var(--fg2)}
+.path .ic{width:17px;height:17px;color:var(--data);transform:rotate(90deg);stroke-width:2.2}
+.fc-foot{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--fill);border-radius:999px;padding:3px 10px;font-size:0.706rem;font-weight:600;color:var(--fg2)}
+.chip.star{color:var(--warm-ink)}
+
+/* empty state */
+.empty{text-align:center;padding:40px 8px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h2{font:800 1.294rem var(--round);margin:12px 0 0}
+.empty p{color:var(--fg2);margin:0 0 10px;max-width:30ch}
+.btn{display:block;width:100%;max-width:340px;padding:13px 16px;border-radius:14px;background:var(--fill);font-weight:650;text-align:center}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.sm{width:auto;display:inline-block;padding:8px 14px;font-size:0.824rem;border-radius:999px}
+
+/* grouped lists */
+.grp{background:var(--card);border-radius:14px;overflow:hidden;margin:0 0 18px;box-shadow:var(--shadow)}
+.gt{font-size:0.735rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--fg2);margin:18px 6px 6px}
+.row{display:flex;align-items:center;gap:12px;min-height:46px;padding:8px 16px;width:100%}
+.row+.row{border-top:.5px solid var(--line)}
+.row label,.row>span:first-child{flex:none;min-width:0}
+.row .val{margin-left:auto;color:var(--fg2);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.link .val::after{content:"›";margin-left:8px;color:var(--fg2);opacity:.7}
+.row input:not([type=file]),.row select{flex:1;min-width:0;border:0;background:none;text-align:right;outline:none;padding:6px 0;color:var(--fg2)}
+.row input::placeholder{color:color-mix(in srgb,var(--fg2) 60%,transparent)}
+.row.area{display:block}.row.area textarea{width:100%;min-height:84px;border:0;background:none;resize:vertical;outline:none;padding:4px 0;color:var(--fg)}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;margin-left:auto;gap:2px;flex-wrap:wrap}
+.seg button{min-height:34px;padding:5px 11px;border-radius:8px;font-size:0.794rem;font-weight:600;color:var(--fg2);text-align:center}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.segrow{display:block}.segrow .seg{margin:8px 0 2px}
+.stars{display:flex;gap:4px;margin-left:auto}
+.stars button{font-size:1.529rem;line-height:1;color:var(--fill);padding:8px 3px}
+.stars button.on{color:var(--warm-ink)}
+.hint{font-size:0.735rem;color:var(--fg2);margin:-10px 6px 16px}
+
+/* sheets */
+#layers{position:fixed;inset:0;pointer-events:none;z-index:50}
+.sheet{position:absolute;inset:0;background:var(--bg);pointer-events:auto;display:flex;flex-direction:column;animation:up .26s cubic-bezier(.2,.8,.2,1);padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.shead{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:max(10px,env(safe-area-inset-top,0px)) 16px 10px;border-bottom:.5px solid var(--line);background:var(--bg)}
+.shead b{font:700 1rem var(--round)}
+.shead button{color:var(--accent-text);font-weight:600;padding:8px 2px;min-width:56px;min-height:44px}
+.shead button:last-child{text-align:right}
+.shead button[disabled]{opacity:.4}
+.sbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(32px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
+.sbody>.wrap{max-width:640px}
+
+/* boarding pass hero */
+.pass{background:var(--hero);color:var(--hero-fg);border-radius:22px;padding:18px 18px 16px;margin-bottom:16px;position:relative;overflow:hidden}
+.pass .fc-top{color:var(--hero-fg2)}
+.pass .code small{color:var(--hero-fg2);max-width:30vw}
+.pass .path::before{border-color:rgba(255,255,255,.35)}
+.pass .path span{background:var(--hero);color:var(--hero-fg2)}
+.pass .path .ic{color:var(--warm)}
+.pass .code{font-size:2.471rem}
+.ptimes{display:flex;justify-content:space-between;margin-top:8px;font:600 0.882rem var(--round);color:var(--hero-fg)}
+.perf{border-top:2px dashed rgba(255,255,255,.22);margin:16px -18px 14px;position:relative}
+.perf::before,.perf::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--bg)}
+.perf::before{left:-10px}.perf::after{right:-10px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pgrid div{min-width:0}
+.pgrid small{display:block;font-size:0.647rem;letter-spacing:.06em;text-transform:uppercase;color:var(--hero-fg2)}
+.pgrid b{display:block;font:700 1rem var(--round);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px}
+.photos button,.photos .ph{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--fill);position:relative}
+.photos img{width:100%;height:100%;object-fit:cover}
+.photos .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;font-size:0.882rem;line-height:1}
+.photos .add{display:grid;place-items:center;color:var(--accent);aspect-ratio:1;border-radius:12px;border:1.5px dashed var(--line)}
+.viewer{position:absolute;inset:0;background:rgba(0,0,0,.94);display:grid;place-items:center;pointer-events:auto;z-index:2}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain}
+
+/* pickers */
+.plist .row{padding:10px 16px}
+.plist .big{font:800 1.176rem var(--round);width:54px;flex:none}
+.plist small{display:block;color:var(--fg2);font-size:0.735rem}
+.plist .t{min-width:0;flex:1}
+.plist .t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* stats */
+.hero{background:var(--hero);color:var(--hero-fg);border-radius:22px;padding:18px;margin-bottom:12px}
+.hero .big{font:800 2.706rem/1 var(--round);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hero .lbl{font-size:0.765rem;color:var(--hero-fg2);margin-top:4px}
+.hero .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.hero.passport{background:linear-gradient(155deg,var(--hero),var(--hero2))}
+.hero .ph{display:flex;justify-content:space-between;gap:10px;font:700 0.706rem var(--round);letter-spacing:.09em;color:var(--hero-fg2);margin-bottom:16px}
+.hero small{display:block;font-size:0.676rem;letter-spacing:.08em;color:var(--hero-fg2);margin-bottom:3px}
+.hero .two{margin-top:0;grid-template-columns:.75fr 1.25fr}.hero .two .big{font-size:2.118rem;white-space:nowrap}.hero .big .u{font-size:1.059rem;letter-spacing:0;font-weight:700}
+.hero .three{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-top:20px}.hero .three b{font:800 1.529rem var(--round);letter-spacing:-.02em}
+.hero .fun{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.16);font-size:0.824rem;color:var(--hero-fg2)}
+.hero .fun b{color:var(--warm);font-weight:700}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
+.tile{background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow);min-width:0}
+.tile b{display:block;font:800 1.647rem/1.05 var(--round);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.tile small{color:var(--fg2);font-size:0.765rem}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 14px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;min-height:34px;padding:6px 14px;border-radius:999px;background:var(--fill);font-size:0.824rem;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.card{background:var(--card);border-radius:18px;padding:14px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 10px;font:700 0.882rem var(--round);display:flex;justify-content:space-between;align-items:baseline}
+.card h3 small{font:500 0.735rem var(--font);color:var(--fg2)}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;margin:9px 0}
+.bar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.853rem}
+.bar .v{font:700 0.824rem var(--round);font-variant-numeric:tabular-nums;color:var(--fg2)}
+.bar .tr{grid-column:1/-1;height:7px;border-radius:4px;background:var(--fill);overflow:hidden}
+.bar .tr i{display:block;height:100%;border-radius:4px;background:var(--data)}
+.cols{display:flex;align-items:flex-end;gap:3px;height:132px;padding-top:18px}
+.cols div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;font-size:0.647rem;color:var(--fg2);font-variant-numeric:tabular-nums}
+.cols i{display:block;width:100%;max-width:26px;border-radius:5px 5px 2px 2px;background:var(--data);min-height:2px}
+.cols div.z i{background:var(--fill)}
+.cols span{font-size:0.647rem;font-weight:700;color:var(--fg);height:12px}
+.rec{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:.5px solid var(--line);font-size:0.853rem}
+.rec:first-of-type{border-top:0}
+.rec span:first-child{color:var(--fg2);flex:none}
+.rec span:last-child{text-align:right;font-weight:600;min-width:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+
+/* map */
+#mapwrap{position:absolute;left:0;right:0;top:0;bottom:0;background:var(--ocean);touch-action:none;overflow:hidden}
+#mapsvg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.mtop{position:absolute;left:0;right:0;top:0;z-index:3;padding:max(12px,env(safe-area-inset-top,0px)) 16px 0;pointer-events:none}
+.mtop>*{pointer-events:auto}
+.mtop .hrow{align-items:flex-start}
+.pill{background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:999px;box-shadow:var(--shadow)}
+.mtitle{font:800 1.647rem var(--round);letter-spacing:-.02em;padding:6px 14px}
+.mseg{display:flex;padding:3px;gap:2px}
+.mseg button{padding:6px 12px;border-radius:999px;font-size:0.765rem;font-weight:650;color:var(--fg2)}
+.mseg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.mtop .chips{margin-top:10px}
+.mtop .chips button{background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.mtop .chips button[aria-pressed="true"]{background:var(--accent)}
+.mbot{position:absolute;left:16px;right:16px;bottom:84px;z-index:3;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.mbot>*{pointer-events:auto}
+.msum{display:flex;justify-content:space-around;padding:10px 8px;text-align:center}
+.msum b{display:block;font:800 1.118rem var(--round);font-variant-numeric:tabular-nums}
+.msum small{font-size:0.676rem;color:var(--fg2)}
+.msel{padding:12px 16px;display:flex;align-items:center;gap:12px;border-radius:18px;width:100%}
+.msel .code{font-size:1.412rem}
+.zoom{position:absolute;right:16px;bottom:172px;z-index:3;display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
+.zoom button{width:44px;height:44px;display:grid;place-items:center;font-size:1.294rem;font-weight:500}
+.zoom button+button{border-top:.5px solid var(--line)}
+.lbl-ap{font:700 0.647rem var(--round);fill:var(--fg);paint-order:stroke;stroke:var(--ocean);stroke-width:2.6px;stroke-linejoin:round;pointer-events:none}
+
+.seg .ic{width:18px;height:18px}
+.clist{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:6px}
+.crow{display:flex;gap:12px;align-items:flex-start;width:100%;padding:13px 14px}
+.srow+.srow{border-top:.5px solid var(--line)}.crow:active{background:var(--fill)}
+.clg .al{width:38px;height:38px;min-width:38px;border-radius:10px;font-size:0.765rem}.clg img.al.logo{padding:3px}
+.cbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.c1{display:flex;justify-content:space-between;gap:8px;font-size:0.765rem;color:var(--fg2);white-space:nowrap}.c1 em{font-style:normal;margin-left:8px;opacity:.85}
+.c2{font:700 1rem var(--round);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.c3{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.al.logo{background:#fff;padding:2px;border-radius:7px;object-fit:contain;border:.5px solid var(--line)}
+.bar .n{display:flex;align-items:center;gap:8px;min-width:0}.bar .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero .btn{background:rgba(255,255,255,.14);color:#fff}
+.achs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ach{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:var(--fill);min-width:0;opacity:.72}
+.ach .medal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--card);color:var(--fg2);margin-bottom:4px}
+.ach .medal .ic{width:18px;height:18px}
+.ach b{font:700 0.824rem var(--round)}.ach small{font-size:0.706rem;color:var(--fg2)}
+.ach.on{opacity:1;background:color-mix(in srgb,var(--data) 14%,var(--card))}.ach.on .medal{background:var(--data);color:var(--accent-ink)}
+.rec{width:100%}button.rec{text-align:left}
+@media (prefers-contrast:more){:root{--fg2:#3A3A42;--line:rgba(60,60,67,.5);--fill:rgba(120,120,128,.26);--shadow:0 0 0 1px rgba(60,60,67,.3)}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fg2:#CFCFD6;--line:rgba(255,255,255,.4);--fill:rgba(120,120,128,.42)}}
+@media (prefers-reduced-transparency:reduce){#tabs,.pill,.navbar,.as .ag{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--card)}}
+.seg button,.chips button{position:relative}
+.seg button::after,.chips button::after{content:"";position:absolute;left:0;right:0;top:-6px;bottom:-6px}
+.btn.sm{position:relative}.btn.sm::after{content:"";position:absolute;inset:-6px}
+.photos .x::after{content:"";position:absolute;inset:-10px}
+.row select{appearance:none;-webkit-appearance:none;text-align-last:right;text-align:right}
+.sheet.page{animation:right .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes right{from{transform:translateX(34px);opacity:0}to{transform:none;opacity:1}}
+.srow{position:relative;overflow:hidden;background:var(--card)}
+.swa{position:absolute;right:0;top:0;bottom:0;display:flex;opacity:0;transition:opacity .15s}.srow.sw .swa,.srow.open .swa{opacity:1}
+.swa button{width:76px;display:grid;place-items:center;color:#fff;font-weight:650;background:#0A74FF}
+.swa button.d{background:#D93A33}
+.srow .crow{position:relative;background:var(--card);transition:transform .2s;transform:translateX(var(--tx,0px))}
+.as{position:absolute;inset:0;pointer-events:auto;background:rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));animation:fade .2s;z-index:3}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.as .ag{background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);border-radius:20px;overflow:hidden}
+.as .at{padding:14px 16px;text-align:center;color:var(--fg2);font-size:0.765rem}.as .at b{display:block;color:var(--fg);font-size:0.824rem;margin-bottom:2px}
+.as button{display:block;width:100%;min-height:56px;font-size:1.176rem;text-align:center;color:var(--accent-text)}
+.as .ag button{border-top:.5px solid var(--line)}.as button.d{color:var(--bad)}
+.as .cancel{background:var(--card);border-radius:20px;font-weight:650}
+@media (prefers-reduced-motion:reduce){.as,.sheet.page{animation:none}.srow .crow{transition:none}}
+#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:0.824rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}#toast{transition:none}}
+@media (min-width:700px){.code{font-size:2.235rem}}
+</style>
+
+<div id="app">
+  <div id="main"></div>
+  <nav id="tabs" role="tablist" aria-label="Sections"></nav>
+</div>
+<div id="edge-b"></div>
+<div id="layers"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file" accept=".csv,.json,text/csv,application/json,text/plain" hidden>
+<input type="file" id="photofile" accept="image/*" multiple hidden>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+const AIRPORTS=/*__AIRPORTS__*/[];
+const WORLD=/*__WORLD__*/null;
+const SEED=/*__SEED__*/"";
+const LOGOS=/*__LOGOS__*/{};
+const TZS=/*__TZS__*/[];
+const ISO=/*__ISO__*/{};
+</script>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const isFut=f=>f.date>todayStr();
+const inDays=d=>{const n=Math.round((new Date(d+'T00:00:00')-new Date(todayStr()+'T00:00:00'))/864e5);return n<=1?'Tomorrow':'In '+n+' days'};
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+};
+const I={
+ plus:'<path d="M12 5v14M5 12h14"/>',search:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/>',
+ list:'<path d="M4 6h16M4 12h16M4 18h10"/>',map:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+ chart:'<path d="M5 20V10M12 20V4M19 20v-7"/>',gear:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+ plane:'<path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>',
+ cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+ rows:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+ cards:'<rect x="4" y="5" width="16" height="6" rx="2"/><rect x="4" y="13" width="16" height="6" rx="2"/>',
+ trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6"/>',
+ star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9 6.8 19.7l1-5.9L3.5 9.7l5.9-.8z"/>'
+};
+const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
+const hue=s=>{let h=0;for(const c of String(s||'?'))h=(h*31+c.charCodeAt(0))%360;return h};
+const logoOf=f=>LOGOS[String(f.airlineCode||'').toUpperCase()]||null;
+const badge=f=>{const l=logoOf(f);return l?`<img class="al logo" src="${l}" alt="">`:`<span class="al" style="--h:${hue(f.airlineCode||f.airline)}">${esc(f.airlineCode||(f.airline||'✈').slice(0,2).toUpperCase())}</span>`};
+const toast=(m)=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2600)};
+
+/* ---------- reference data ---------- */
+const CITYFIX={'Tel-aviv':'Tel Aviv','Milano':'Milan','Roma':'Rome','Wien':'Vienna','Praha':'Prague','Warszawa':'Warsaw','Kobenhavn':'Copenhagen','Lisboa':'Lisbon','Sevilla':'Seville'};
+const AP=AIRPORTS.map(a=>({iata:a[0],icao:a[1],name:a[2],city:CITYFIX[a[3]]||a[3],country:a[4],lat:a[5],lon:a[6],tz:TZS[a[7]]||'',k:norm(a[0]+' '+a[1]+' '+a[3]+' '+a[2]+' '+a[4])}));
+const byCode=new Map();AP.forEach(a=>{byCode.set(a.iata,a);if(a.icao)byCode.set(a.icao,a)});
+const apOf=c=>byCode.get(String(c||'').toUpperCase())||null;
+const apShow=c=>apOf(c)||{iata:String(c||'').toUpperCase(),icao:'',name:'',city:String(c||'').toUpperCase(),country:'',lat:NaN,lon:NaN};
+const customAp=LS.get('fl.airports',[]);
+function regAp(a){const i=AP.findIndex(x=>x.iata===a.iata);if(i>=0)AP.splice(i,1);const o={...a,custom:true,k:norm(a.iata+' '+(a.icao||'')+' '+a.city+' '+a.name+' '+a.country)};AP.push(o);byCode.set(o.iata,o);if(o.icao)byCode.set(o.icao,o)}
+function addCustom(a){const i=customAp.findIndex(x=>x.iata===a.iata);if(i>=0)customAp.splice(i,1);customAp.push(a);LS.set('fl.airports',customAp);regAp(a)}
+customAp.forEach(regAp);
+const SAM=new Set(['Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Guyana','Paraguay','Peru','Suriname','Uruguay','Venezuela','French Guiana','Falkland Islands']);
+function contFromTz(tz,country){const r=(tz||'').split('/')[0];
+  if(r==='Europe'||r==='Asia'||r==='Africa'||r==='Antarctica')return r;if(r==='Australia')return 'Oceania';
+  if(r==='America')return SAM.has(country)?'South America':'North America';
+  if(r==='Pacific')return country==='United States'?'North America':'Oceania';
+  if(r==='Atlantic')return ['Iceland','Portugal','Spain','Faroe Islands'].includes(country)?'Europe':country==='Bermuda'?'North America':country==='Cape Verde'?'Africa':'';
+  if(r==='Indian')return ['Maldives','British Indian Ocean Territory','Christmas Island','Cocos (Keeling) Islands'].includes(country)?'Asia':'Africa';
+  return ''}
+const CC=new Map();AP.forEach(a=>{const c=contFromTz(a.tz,a.country);if(c&&!CC.has(a.country))CC.set(a.country,c)});
+const contOf=a=>a?(contFromTz(a.tz,a.country)||CC.get(a.country)||''):'';
+const CALIAS={'United States':'United States of America','Czech Republic':'Czechia','Congo (Kinshasa)':'Dem. Rep. Congo','Congo (Brazzaville)':'Congo','Cote d\'Ivoire':'Côte d\'Ivoire','Dominican Republic':'Dominican Rep.','Bosnia and Herzegovina':'Bosnia and Herz.','Central African Republic':'Central African Rep.','Equatorial Guinea':'Eq. Guinea','Falkland Islands':'Falkland Is.','South Sudan':'S. Sudan','Solomon Islands':'Solomon Is.','East Timor':'Timor-Leste','Western Sahara':'W. Sahara','Swaziland':'eSwatini','Burma':'Myanmar'};
+const AIRLINES=[["El Al Israel Airlines","LY","ELY"],["Israir Airlines and Tourism","6H","ISR"],["Arkia Israeli Airlines","IZ","AIZ"],["Lufthansa","LH","DLH"],["Swiss International Air Lines","LX","SWR"],["Austrian Airlines","OS","AUA"],["Air France","AF","AFR"],["KLM","KL","KLM"],["British Airways","BA","BAW"],["Ryanair","FR","RYR"],["easyJet","U2","EZY"],["Wizz Air","W6","WZZ"],["Turkish Airlines","TK","THY"],["Pegasus Airlines","PC","PGT"],["Aegean Airlines","A3","AEE"],["Alitalia","AZ","AZA"],["ITA Airways","AZ","ITY"],["Iberia","IB","IBE"],["Vueling","VY","VLG"],["TAP Air Portugal","TP","TAP"],["LOT Polish Airlines","LO","LOT"],["SAS","SK","SAS"],["Finnair","AY","FIN"],["Aer Lingus","EI","EIN"],["United Airlines","UA","UAL"],["Delta Air Lines","DL","DAL"],["American Airlines","AA","AAL"],["JetBlue","B6","JBU"],["Air Canada","AC","ACA"],["Emirates","EK","UAE"],["Etihad Airways","EY","ETD"],["Qatar Airways","QR","QTR"],["flydubai","FZ","FDB"],["Ethiopian Airlines","ET","ETH"],["Air India","AI","AIC"],["Cathay Pacific","CX","CPA"],["Singapore Airlines","SQ","SIA"],["Thai Airways","TG","THA"],["Japan Airlines","JL","JAL"],["ANA","NH","ANA"],["Korean Air","KE","KAL"],["Qantas","QF","QFA"],["Aeroflot","SU","AFL"]];
+const AIRCRAFT=["Airbus A220","Airbus A319","Airbus A320","Airbus A321","Airbus A330-200","Airbus A330-300","Airbus A340-600","Airbus A350-900","Airbus A380-800","Boeing 737-700","Boeing 737-800","Boeing 737 MAX 8","Boeing 747-400","Boeing 757-200","Boeing 767-300","Boeing 777-200","Boeing 777-300ER","Boeing 787-8","Boeing 787-9","Boeing 787-10","Embraer E190","Embraer E195","ATR 72-500","Bombardier Dash 8 Q400","Cessna 172 Skyhawk"];
+const CLS={1:'Economy',2:'Business',3:'First',4:'Economy Plus',5:'Private'};
+const SEAT={0:'No seat',1:'Window',2:'Middle',3:'Aisle'};
+const WHY={1:'Leisure',2:'Business',3:'Crew',4:'Other'};
+
+/* ---------- math / format ---------- */
+function dist(a,b){if(!a||!b||isNaN(a.lat)||isNaN(b.lat))return 0;const R=6371,t=Math.PI/180,dA=(b.lat-a.lat)*t,dO=(b.lon-a.lon)*t;
+  const h=Math.sin(dA/2)**2+Math.cos(a.lat*t)*Math.cos(b.lat*t)*Math.sin(dO/2)**2;return 2*R*Math.asin(Math.sqrt(Math.min(1,h)))}
+const estMin=km=>km>0?Math.round(km/800*60+30):0;
+function fx(f){const a=apOf(f.from),b=apOf(f.to);const km=dist(a,b);const est=!(f.duration>0);return{a,b,km,min:est?estMin(km):f.duration,est}}
+const cfg={units:'km',...LS.get('fl.settings',{})};
+const fmtNum=n=>Math.round(n).toLocaleString('en-US');
+const fmtDist=km=>cfg.units==='mi'?fmtNum(km*0.621371)+' mi':fmtNum(km)+' km';
+const distUnit=()=>cfg.units==='mi'?'mi':'km';
+const distVal=km=>cfg.units==='mi'?km*0.621371:km;
+const fmtDur=(m,est)=>{if(!(m>0))return '—';const h=Math.floor(m/60),mm=Math.round(m%60);return (est?'~':'')+(h?h+'h ':'')+(mm||!h?mm+'m':'').trim()};
+const fmtTot=m=>{if(!(m>0))return '0h';const d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=Math.round(m%60);return d?`${d}d ${h}h`:h?`${h}h ${mm}m`:`${mm}m`};
+const fmtDate=(d,o)=>{const x=new Date(d+'T12:00:00');return isNaN(x)?d:x.toLocaleDateString('en-GB',o||{day:'numeric',month:'short',year:'numeric'})};
+const hm=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.round(m%60)).padStart(2,'0');
+
+/* ---------- state + storage ---------- */
+let flights=LS.get('fl.flights',[]);
+const canSave=LS.set('fl.probe',1);
+const S={tab:LS.get('fl.tab','flights'),q:'',sy:'all',by:'flights',view:LS.get('fl.view','compact'),sort:'date',dir:'desc'};
+function persist(){if(!LS.set('fl.flights',flights))toast('Could not save: browser storage is full or blocked')}
+function persistCfg(){LS.set('fl.settings',cfg)}
+const sortF=(a,b)=>(b.date+(b.depTime||'')).localeCompare(a.date+(a.depTime||''));
+const keyOf=f=>[f.date,f.from,f.to,f.flightNo||'',f.depTime||''].join('|');
+
+/* photos: IndexedDB with in-memory fallback */
+const PH={mem:new Map(),db:null,
+  open(){if(this.p)return this.p;return this.p=new Promise(r=>{try{const q=indexedDB.open('flightlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('photos');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})},
+  async put(id,data){this.mem.set(id,data);const db=await this.open();if(!db)return;await new Promise(r=>{try{const t=db.transaction('photos','readwrite');t.objectStore('photos').put(data,id);t.oncomplete=t.onerror=t.onabort=()=>r()}catch(e){r()}})},
+  async get(id){if(this.mem.has(id))return this.mem.get(id);const db=await this.open();if(!db)return null;return new Promise(r=>{try{const q=db.transaction('photos').objectStore('photos').get(id);q.onsuccess=()=>{if(q.result)this.mem.set(id,q.result);r(q.result||null)};q.onerror=()=>r(null)}catch(e){r(null)}})},
+  async del(id){this.mem.delete(id);const db=await this.open();if(!db)return;try{db.transaction('photos','readwrite').objectStore('photos').delete(id)}catch(e){}}
+};
+function hydrate(root){$$('img[data-pid]',root).forEach(async im=>{const d=await PH.get(im.dataset.pid);if(d)im.src=d})}
+function shrink(file,max=1280){return new Promise(res=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.8))};im.onerror=()=>{URL.revokeObjectURL(u);res(null)};im.src=u})}
+
+/* ---------- CSV in / out ---------- */
+function parseCSV(t){t=t.replace(/^﻿/,'');const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);f='';rows.push(row);row=[]}else f+=c}
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows.filter(r=>r.some(x=>x.trim()!==''))}
+function parseAp(s){s=(s||'').trim();if(!s)return null;let m=s.match(/\(([A-Za-z0-9]{3})\/([A-Za-z0-9]{3,4})\)\s*$/);
+  if(m)return(apOf(m[1])||apOf(m[2]))?(apOf(m[1])||apOf(m[2])).iata:m[1].toUpperCase();
+  if(/^[A-Za-z]{3}$/.test(s))return s.toUpperCase();
+  if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;return null}
+const t2m=s=>{const m=String(s||'').match(/^(\d+):(\d\d)/);return m?(+m[1])*60+(+m[2]):0};
+function csvToFlights(text){
+  const rows=parseCSV(text);if(rows.length<2)return{list:[],bad:0};
+  const hd=rows[0].map(h=>h.trim().toLowerCase());const col=n=>hd.indexOf(n);
+  const out=[];let bad=0;
+  for(const r of rows.slice(1)){
+    const g=n=>{const i=col(n);return i<0?'':(r[i]||'').trim()};
+    const date=g('date').slice(0,10),from=parseAp(g('from')),to=parseAp(g('to'));
+    if(!/^\d{4}-\d\d-\d\d$/.test(date)||!from||!to){bad++;continue}
+    const dep=g('dep time'),arr=g('arr time');const noTimes=dep.startsWith('00:00')&&arr.startsWith('00:00');
+    let al=g('airline'),aname='',aiata='',aicao='';const am=al.match(/^(.*?)\s*\(([^/)]*)\/([^)]*)\)\s*$/);
+    if(am){aname=am[1].trim();aiata=am[2].trim();aicao=am[3].trim()}else aname=al;
+    let ac=g('aircraft').replace(/^\(\s*\)$/,''),acn=ac,acc='';const cm=ac.match(/^(.*?)\s*\(([A-Za-z0-9]+)\)\s*$/);if(cm){acn=cm[1].trim();acc=cm[2]}
+    const seat=g('seat number');let reg=g('registration');if(reg&&(reg===seat||/^\d{1,2}[A-K]$/i.test(reg)))reg='';
+    const num=n=>{const v=parseInt(g(n),10);return isNaN(v)?0:v};
+    const rating=Math.max(0,Math.min(5,parseInt(g('rating'),10)||0));
+    out.push({id:uid(),date,flightNo:g('flight number'),from,to,depTime:noTimes?'':dep.slice(0,5),arrTime:noTimes?'':arr.slice(0,5),
+      duration:t2m(g('duration')),airline:aname,airlineCode:aiata,airlineIcao:aicao,aircraft:acn,aircraftCode:acc,reg,seat,
+      seatType:num('seat type'),cls:num('flight class')||1,why:num('flight reason')||1,note:g('note'),rating,photos:[]});
+  }
+  return{list:out,bad}}
+const q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+function flightsToCSV(){
+  const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating'];
+  const lab=c=>{const a=apShow(c);return a.name?`${a.city} / ${a.name} (${a.iata}/${a.icao})`:a.iata};
+  const t=m=>m?hm(m)+':00':'';
+  const rows=[...flights].sort((a,b)=>a.date.localeCompare(b.date)).map(f=>{const x=fx(f);
+    return[f.date,f.flightNo,lab(f.from),lab(f.to),f.depTime?f.depTime+':00':'00:00:00',f.arrTime?f.arrTime+':00':'00:00:00',t(x.min),
+      f.airline?`${f.airline} (${f.airlineCode||''}/${f.airlineIcao||''})`:' (/)',f.aircraft?`${f.aircraft} (${f.aircraftCode||''})`:'',f.reg,f.seat,f.seatType,f.cls,f.why,f.note,f.rating||''].map(q2).join(',')});
+  return head.map(q2).join(',')+'\n'+rows.join('\n')+'\n'}
+async function saveFile(name,data){
+  try{const d=window.claude&&await window.claude.use('downloads');
+    if(d){await d.save({filename:name,data});toast('Saved '+name);return}}catch(e){if(e&&e.code==='declined')return}
+  const mime=/\.json$/.test(name)?'application/json':/\.csv$/.test(name)?'text/csv':/\.png$/.test(name)?'image/png':'text/plain';
+  const blob=data instanceof Blob?data:new Blob([data],{type:mime});
+  try{const file=new File([blob],name,{type:blob.type||mime});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved '+name);return}catch(e){}
+  try{await navigator.clipboard.writeText(typeof data==='string'?data:'');toast('Copied to clipboard instead')}catch(e){toast('Could not save the file here')}}
+async function exportJSON(){
+  const photos={};for(const f of flights)for(const id of f.photos||[]){const d=await PH.get(id);if(d)photos[id]=d}
+  await saveFile(`uflightly-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'uflightly',version:1,flights,photos,airports:customAp}))}
+function merge(list,photos){
+  const have=new Set(flights.map(keyOf));let add=0,dup=0;
+  for(const f of list){if(have.has(keyOf(f))){dup++;continue}have.add(keyOf(f));f.photos=(f.photos||[]).filter(id=>photos&&photos[id]);flights.push(f);add++}
+  for(const id in photos||{})PH.put(id,photos[id]);
+  persist();return{add,dup}}
+async function importText(text){
+  text=text.trim();let list,bad=0,photos=null;
+  try{if(text[0]==='{'||text[0]==='['){const j=JSON.parse(text);list=(Array.isArray(j)?j:j.flights||[]).filter(f=>f&&f.date&&f.from&&f.to).map(f=>({...f,id:f.id||uid()}));photos=j.photos||null;(j.airports||[]).forEach(a=>{if(a&&a.iata&&isFinite(a.lat)&&isFinite(a.lon))addCustom(a)})}
+    else{const r=csvToFlights(text);list=r.list;bad=r.bad}}catch(e){toast('That file could not be read');return}
+  if(!list.length){toast(bad?'No valid flights found in that file':'The file has no flights');return}
+  const unknown=new Set(list.flatMap(f=>[f.from,f.to]).filter(c=>!apOf(c))).size;
+  const r=merge(list,photos);render();
+  toast(`Added ${r.add} flight${r.add===1?'':'s'}`+(r.dup?`, ${r.dup} already there`:'')+(bad?`, ${bad} skipped`:'')+(unknown?`, ${unknown} unknown airport${unknown>1?'s':''}`:''))}
+
+/* ---------- shell ---------- */
+const TABS=[['flights','Flights','list'],['map','Map','map'],['stats','Stats','chart'],['settings','Settings','gear']];
+$('#tabs').innerHTML=TABS.map(([k,l,i])=>`<button role="tab" data-tab="${k}" aria-selected="false">${ic(i)}<span>${l}</span></button>`).join('');
+function setTab(t){S.tab=t;LS.set('fl.tab',t);render()}
+function render(keep){
+  if(!TABS.some(t=>t[0]===S.tab))S.tab='flights';
+  $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===S.tab));
+  document.body.dataset.view=S.tab;
+  const m=$('#main'),old=$('.scroll',m),top=keep&&old&&S._rt===S.tab?old.scrollTop:0;
+  m.innerHTML=({flights:vFlights,map:vMap,stats:vStats,settings:vSettings})[S.tab]();
+  const nw=$('.scroll',m);
+  if(nw){const h=$('.large h1',nw);if(h){const nb=document.createElement('div');nb.className='navbar';nb.setAttribute('aria-hidden','true');nb.innerHTML=`<span>${esc(h.textContent)}</span>`;nw.insertBefore(nb,nw.firstChild);nw.addEventListener('scroll',()=>nb.classList.toggle('on',nw.scrollTop>54),{passive:true})}
+    if(top)nw.scrollTop=top}
+  S._rt=S.tab;
+  hydrate(m);if(S.tab==='map')mapSetup()}
+
+/* ---------- flights tab ---------- */
+function hay(f){const a=apShow(f.from),b=apShow(f.to);return norm([f.date,f.date.slice(0,4),f.flightNo,a.iata,a.icao,a.city,a.name,a.country,b.iata,b.icao,b.city,b.name,b.country,f.airline,f.airlineCode,f.aircraft,f.aircraftCode,f.reg,f.note,CLS[f.cls]].join(' '))}
+function card(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
+  return `<button class="fcard" data-act="open" data-id="${f.id}">
+   <div class="fc-top">${badge(f)}
+    <span class="grow">${esc([f.flightNo,f.airline&&!f.flightNo?f.airline:'',f.aircraft].filter(Boolean).join(' · ')||'Flight')}</span><span>${fmtDate(f.date,{day:'numeric',month:'short'})}</span></div>
+   <div class="fc-route"><div class="code">${esc(a.iata)}<small>${esc(a.city)}</small></div>
+    <div class="path"><span>${ic('plane')}${fmtDur(x.min,x.est)}</span></div>
+    <div class="code r">${esc(b.iata)}<small>${esc(b.city)}</small></div></div>
+   <div class="fc-foot">${isFut(f)?`<span class="chip" style="color:var(--warm-ink)">${inDays(f.date)}</span>`:''}${x.km?`<span class="chip">${fmtDist(x.km)}</span>`:''}<span class="chip">${CLS[f.cls]||'Economy'}</span>${f.seat?`<span class="chip">Seat ${esc(f.seat)}</span>`:''}${f.rating?`<span class="chip star">${'★'.repeat(f.rating)}</span>`:''}${(f.photos||[]).length?`<span class="chip">${f.photos.length} photo${f.photos.length>1?'s':''}</span>`:''}</div></button>`}
+const fno=s=>String(s||'').replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2');
+const CLSHORT={1:'',2:'Business',3:'First',4:'E+',5:'Private'};
+function crow(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
+  const ch=[isFut(f)?'!'+inDays(f.date):'',x.min?fmtDur(x.min,x.est):'',f.aircraftCode,f.reg,CLSHORT[f.cls],[f.seat,f.seatType?SEAT[f.seatType]:''].filter(Boolean).join(' · '),f.rating?'★'.repeat(f.rating):''].filter(Boolean);
+  return `<div class="srow"><div class="swa"><button data-act="edit" data-id="${f.id}">Edit</button><button class="d" data-act="del" data-id="${f.id}">Delete</button></div><button class="crow" data-act="open" data-id="${f.id}"><span class="clg">${badge(f)}</span><span class="cbody">
+   <span class="c1"><span>${esc(fno(f.flightNo)||f.airline||'Flight')}<em>${esc(a.iata)} → ${esc(b.iata)}</em></span><span>${fmtDate(f.date)}</span></span>
+   <span class="c2">${esc(a.city)} to ${esc(b.city)}</span>
+   ${ch.length?`<span class="c3">${ch.map(c=>c[0]==='!'?`<span class="chip" style="color:var(--warm-ink)">${esc(c.slice(1))}</span>`:c[0]==='★'?`<span class="chip star">${c}</span>`:`<span class="chip">${esc(c)}</span>`).join('')}</span>`:''}</span></button></div>`}
+function listHtml(){
+  if(!flights.length){const n=SEED?csvToFlights(SEED).list.length:0;
+    return `<div class="empty">${ic('plane').replace('class="ic "','class="ic" style="width:56px;height:56px;color:var(--accent);transform:rotate(45deg)"')}
+     <h2>Your logbook is empty</h2><p>Add your first flight, or bring in your history.</p>
+     <button class="btn primary" data-act="add">Add a flight</button>
+     ${n?`<button class="btn" data-act="seed">Load my FlightDiary export (${n} flights)</button>`:''}
+     <button class="btn" data-act="import">Import a CSV or backup file</button></div>`}
+  const q=norm(S.q).trim();const list=[...flights].sort(sortF).filter(f=>!q||q.split(/\s+/).every(w=>hay(f).includes(w)));
+  if(!list.length)return `<div class="empty"><p>No flights match “${esc(S.q)}”.</p></div>`;
+  const show=arr=>S.view==='cards'?arr.map(card).join(''):`<div class="clist">${arr.map(crow).join('')}</div>`;
+  const sub=arr=>{const k=arr.reduce((s,f)=>s+fx(f).km,0);return `${arr.length} flight${arr.length>1?'s':''}${k?' · '+fmtDist(k):''}`};
+  const sec=(title,s,arr)=>`<section><div class="yh"><b>${esc(title)}</b><span>${s}</span></div>${show(arr)}</section>`;
+  if(S.sort==='date'){
+    const desc=S.dir==='desc';
+    const up=list.filter(isFut).sort((a,b)=>(a.date+(a.depTime||'')).localeCompare(b.date+(b.depTime||'')));
+    const by={};list.filter(f=>!isFut(f)).forEach(f=>(by[f.date.slice(0,4)]=by[f.date.slice(0,4)]||[]).push(f));
+    const yrs=Object.keys(by).sort();if(desc)yrs.reverse();
+    const upH=up.length?sec('Upcoming',`${up.length} flight${up.length>1?'s':''}`,up):'';
+    const yH=yrs.map(y=>sec(y,sub(by[y]),desc?by[y]:[...by[y]].reverse())).join('');
+    return desc?upH+yH:yH+upH}
+  const kf={from:f=>{const a=apShow(f.from);return a.city+' · '+a.iata},to:f=>{const a=apShow(f.to);return a.city+' · '+a.iata},airline:f=>f.airline||'No airline',aircraft:f=>f.aircraft||'Unknown aircraft'}[S.sort];
+  const g={};list.forEach(f=>(g[kf(f)]=g[kf(f)]||[]).push(f));
+  const ks=Object.keys(g).sort((a,b)=>a.localeCompare(b));if(S.dir==='desc')ks.reverse();
+  return ks.map(k=>sec(k,sub(g[k]),g[k])).join('')}
+function vFlights(){
+  return `<div class="scroll" id="sc"><div class="wrap"><header class="large"><div class="hrow"><h1>Flights</h1><div style="display:flex;align-items:center;gap:10px">${flights.length?`<div class="seg" data-seg="view" style="margin:0;flex-wrap:nowrap"><button data-v="compact" aria-pressed="${S.view==='compact'}" aria-label="Compact list">${ic('rows')}</button><button data-v="cards" aria-pressed="${S.view==='cards'}" aria-label="Large cards">${ic('cards')}</button></div>`:''}<button class="icon-btn" data-act="add" aria-label="Add a flight">${ic('plus')}</button></div></div>
+   ${flights.length?`<label class="search">${ic('search')}<input id="q" type="search" placeholder="Airport, airline, aircraft, year" value="${esc(S.q)}" autocomplete="off" autocapitalize="off"></label>
+   <div class="chips">${[['date','Date'],['from','From'],['to','To'],['airline','Airline'],['aircraft','Aircraft']].map(([k,l])=>`<button data-sort="${k}" aria-pressed="${S.sort===k}">${l}${S.sort===k?(S.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}</div>`:''}</header>
+   <div id="list">${listHtml()}</div></div></div>`}
+
+/* ---------- sheets ---------- */
+function openSheet(html){const page=html.includes('‹ Back');const el=document.createElement('div');el.className='sheet'+(page?' page':'');el.innerHTML=html;$('#layers').appendChild(el);hydrate(el);if(!page)enableSwipe(el);return el}
+function closeSheet(){const L=$('#layers');if(L.lastElementChild)L.lastElementChild.remove()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+function actionSheet({title,message,actions,cancel}){
+  const el=document.createElement('div');el.className='as';el.setAttribute('role','dialog');
+  el.innerHTML=`<div class="ag">${title||message?`<div class="at">${title?`<b>${esc(title)}</b>`:''}${message?`<div>${esc(message)}</div>`:''}</div>`:''}${actions.map((a,i)=>`<button class="${a.destructive?'d':''}" data-i="${i}">${esc(a.label)}</button>`).join('')}</div><button class="cancel" data-i="c">${esc(cancel||'Cancel')}</button>`;
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(b){const i=b.dataset.i;el.remove();if(i!=='c')actions[+i].run()}else if(e.target===el)el.remove()});
+  $('#layers').appendChild(el)}
+function enableSwipe(el){
+  let y0=null,dy=0;const body=()=>$('.sbody',el)||el;
+  el.addEventListener('touchstart',e=>{if(e.target.closest('input,textarea,select,canvas,svg,.photos'))return;if(body().scrollTop>0)return;y0=e.touches[0].clientY;dy=0},{passive:true});
+  el.addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;if(dy>8){el.style.transition='none';el.style.transform=`translateY(${dy}px)`}else if(dy<-4){y0=null;el.style.transform=''}},{passive:true});
+  el.addEventListener('touchend',()=>{if(y0==null)return;const d=dy;y0=null;el.style.transition='transform .2s ease';
+    if(d>120){if(el.dataset.kind==='form'&&formDirty()){el.style.transform='';requestCloseForm()}else{el.style.transform='translateY(100%)';setTimeout(()=>el.remove(),190)}}else el.style.transform=''},{passive:true})}
+function confirmDelete(id){actionSheet({title:'Delete this flight?',message:'It will be removed from your log, along with its photos.',actions:[{label:'Delete flight',destructive:true,run:()=>{const f=flights.find(x=>x.id===id);if(!f)return;(f.photos||[]).forEach(p=>PH.del(p));flights=flights.filter(x=>x.id!==id);persist();$('#layers').innerHTML='';render(true);toast('Flight deleted')}}]})}
+function confirmWipe(){actionSheet({title:'Delete all flights?',message:'This removes every flight and photo from this device. Export a backup first if you might need them.',actions:[{label:'Delete all flights',destructive:true,run:()=>{flights.forEach(f=>(f.photos||[]).forEach(p=>PH.del(p)));flights=[];persist();render();toast('All flights deleted')}}]})}
+const formVals=()=>{const g=id=>($('#'+id)||{}).value||'';return JSON.stringify([g('f-date'),g('f-airline'),g('f-code'),g('f-no'),g('f-ac'),g('f-code2'),g('f-reg'),g('f-seat'),g('f-dep'),g('f-arr'),g('f-h'),g('f-m'),g('f-note'),D&&D.from,D&&D.to,D&&D.seatType,D&&D.cls,D&&D.why,D&&D.rating,D&&D.photos.join(',')])};
+const formDirty=()=>!!(D&&D._snap&&formVals()!==D._snap);
+function requestCloseForm(){if(formDirty())actionSheet({title:'Discard changes?',message:'Your edits to this flight have not been saved.',actions:[{label:'Discard changes',destructive:true,run:()=>closeSheet()}],cancel:'Keep editing'});else closeSheet()}
+
+function detail(id){
+  const f=flights.find(x=>x.id===id);if(!f)return;const x=fx(f),a=apShow(f.from),b=apShow(f.to);
+  const row=(l,v)=>v?`<div class="row"><span>${l}</span><span class="val">${esc(v)}</span></div>`:'';
+  const el=openSheet(`<div class="shead"><button data-act="close">Close</button><b>${fmtDate(f.date,{weekday:'short',day:'numeric',month:'short',year:'numeric'})}</b><button data-act="edit" data-id="${f.id}">Edit</button></div>
+   <div class="sbody"><div class="wrap">
+   <div class="pass"><div class="fc-top">${badge(f)}<span class="grow">${esc([f.airline,f.flightNo].filter(Boolean).join(' · ')||'Flight')}</span></div>
+    <div class="fc-route"><div class="code">${esc(a.iata)}<small>${esc(a.city)}</small></div><div class="path"><span>${ic('plane')}${fmtDur(x.min,x.est)}</span></div><div class="code r">${esc(b.iata)}<small>${esc(b.city)}</small></div></div>
+    ${f.depTime||f.arrTime?`<div class="ptimes"><span>${esc(f.depTime||'')}</span><span>${esc(f.arrTime||'')}</span></div>`:''}
+    <div class="perf"></div>
+    <div class="pgrid"><div><small>Distance</small><b>${x.km?fmtDist(x.km):'—'}</b></div><div><small>Class</small><b>${CLS[f.cls]||'Economy'}</b></div><div><small>Seat</small><b>${esc(f.seat||'—')}</b></div></div></div>
+   ${f.rating?`<div class="card" style="text-align:center;font-size:1.529rem;color:var(--warm-ink);letter-spacing:4px;padding:8px">${'★'.repeat(f.rating)}<span style="color:var(--fill)">${'★'.repeat(5-f.rating)}</span></div>`:''}
+   <div class="grp">${row('Aircraft',[f.aircraft,f.aircraftCode&&'('+f.aircraftCode+')'].filter(Boolean).join(' '))}${row('Registration',f.reg)}${row('Seat type',f.seat||f.seatType?SEAT[f.seatType]:'')}${row('Reason',WHY[f.why])}${row('From',[a.name,a.country].filter(Boolean).join(', '))}${row('To',[b.name,b.country].filter(Boolean).join(', '))}</div>
+   ${f.note?`<div class="gt">Notes</div><div class="grp"><div class="row" style="white-space:pre-wrap;display:block;padding:12px 16px">${esc(f.note)}</div></div>`:''}
+   ${(f.photos||[]).length?`<div class="gt">Photos</div><div class="photos">${f.photos.map(p=>`<button data-act="photo" data-pid="${p}" aria-label="Open photo"><img data-pid="${p}" alt=""></button>`).join('')}</div>`:''}
+   <button class="btn danger" id="delbtn" data-act="del" data-id="${f.id}" style="margin:8px auto">Delete flight</button>
+   </div></div>`);
+  el.dataset.kind='detail'}
+
+/* airport picker */
+function pickAirport(cur,cb){
+  const used=[...new Set(flights.flatMap(f=>[f.from,f.to]))].map(apOf).filter(Boolean);
+  const el=openSheet(`<div class="shead"><button data-act="close">‹ Back</button><b>Choose airport</b><button disabled aria-hidden="true"></button></div>
+   <div class="sbody"><div class="wrap"><label class="search">${ic('search')}<input id="apq" type="search" placeholder="City, airport name or code" autocomplete="off" autocapitalize="off"></label><div class="grp plist" id="apres"></div></div></div>`);
+  const res=$('#apres',el),inp=$('#apq',el);
+  const addRow='<button class="row link" data-newap="1"><span>Can\'t find it? Add an airport</span><span class="val"></span></button>';
+  const show=list=>{res.innerHTML=(list.length?list.map(a=>`<button class="row" data-ap="${a.iata}"><span class="big">${a.iata}</span><span class="t"><b>${esc(a.city)}${a.name&&norm(a.name)!==norm(a.city)?' · '+esc(a.name):''}</b><small>${esc(a.country)}${a.icao?' · '+a.icao:''}</small></span></button>`).join(''):'<div class="row"><span class="val" style="margin:0">No airports found</span></div>')+addRow};
+  const run=()=>{const q=norm(inp.value).trim();if(!q){show(used.slice(0,30));return}
+    const sc=a=>a.iata.toLowerCase()===q?0:a.icao.toLowerCase()===q?1:norm(a.city).startsWith(q)?2:a.k.includes(q)?3:9;
+    show(AP.map(a=>[sc(a),a]).filter(x=>x[0]<9).sort((p,r)=>p[0]-r[0]||p[1].city.localeCompare(r[1].city)).slice(0,40).map(x=>x[1]))};
+  inp.addEventListener('input',run);run();
+  res.addEventListener('click',e=>{const b=e.target.closest('[data-ap]');if(b){closeSheet();cb(b.dataset.ap);return}if(e.target.closest('[data-newap]'))newAirport(code=>{closeSheet();cb(code)})});
+  setTimeout(()=>inp.focus(),120)}
+
+/* add / edit form */
+let D=null;
+function form(id){
+  const f=id?flights.find(x=>x.id===id):null;
+  D=f?JSON.parse(JSON.stringify(f)):{id:uid(),date:new Date().toISOString().slice(0,10),flightNo:'',from:'',to:'',depTime:'',arrTime:'',duration:0,airline:'',airlineCode:'',airlineIcao:'',aircraft:'',aircraftCode:'',reg:'',seat:'',seatType:0,cls:1,why:1,note:'',rating:0,photos:[]};
+  D._new=!f;D._added={};D._removed=[];
+  const sel=(k,l,map)=>`<div class="row"><label for="f-${k}">${l}</label><select id="f-${k}" data-k="${k}">${Object.entries(map).map(([v,n])=>`<option value="${v}"${+v===+D[k]?' selected':''}>${n}</option>`).join('')}</select></div>`;
+  const hrs=Math.floor((D.duration||0)/60),mins=(D.duration||0)%60;
+  const uAl=[...new Set([...flights.map(x=>x.airline),...AIRLINES.map(a=>a[0])].filter(Boolean))],uAc=[...new Set([...flights.map(x=>x.aircraft),...AIRCRAFT].filter(Boolean))];
+  const fel=openSheet(`<div class="shead"><button data-act="cancelform">Cancel</button><b>${f?'Edit flight':'New flight'}</b><button data-act="save" id="savebtn">Save</button></div>
+   <div class="sbody"><div class="wrap">
+   <div class="grp"><div class="row"><label for="f-date">Date</label><input type="date" id="f-date" value="${D.date}"></div>
+    <button class="row link" data-act="pick" data-end="from"><span>From</span><span class="val" id="v-from"></span></button>
+    <button class="row link" data-act="pick" data-end="to"><span>To</span><span class="val" id="v-to"></span></button></div>
+   <div class="gt">Airline</div><div class="grp">
+    <div class="row"><label for="f-airline">Airline</label><input id="f-airline" list="dl-al" placeholder="Delta Air Lines" value="${esc(D.airline)}" autocomplete="off"></div>
+    <div class="row"><label for="f-code">Code</label><input id="f-code" placeholder="DL" maxlength="3" autocapitalize="characters" value="${esc(D.airlineCode)}"></div>
+    <div class="row"><label for="f-no">Flight number</label><input id="f-no" placeholder="DL123" autocapitalize="characters" value="${esc(D.flightNo)}"></div></div>
+   <div class="gt">Aircraft</div><div class="grp">
+    <div class="row"><label for="f-ac">Type</label><input id="f-ac" list="dl-ac" placeholder="Airbus A320" value="${esc(D.aircraft)}" autocomplete="off"></div>
+    <div class="row"><label for="f-code2">Type code</label><input id="f-code2" placeholder="A320" maxlength="5" autocapitalize="characters" value="${esc(D.aircraftCode)}"></div>
+    <div class="row"><label for="f-reg">Registration</label><input id="f-reg" placeholder="N12345" autocapitalize="characters" value="${esc(D.reg)}"></div></div>
+   <div class="gt">Seat and cabin</div><div class="grp">
+    <div class="row"><label for="f-seat">Seat</label><input id="f-seat" placeholder="14A" autocapitalize="characters" value="${esc(D.seat)}"></div>
+    ${sel('seatType','Position',SEAT)}
+    ${sel('cls','Class',CLS)}
+    ${sel('why','Reason',WHY)}</div>
+   <div class="gt">Times</div><div class="grp">
+    <div class="row"><label for="f-dep">Departure</label><input type="time" id="f-dep" value="${esc(D.depTime)}"></div>
+    <div class="row"><label for="f-arr">Arrival</label><input type="time" id="f-arr" value="${esc(D.arrTime)}"></div>
+    <div class="row"><label for="f-h">Duration</label><input type="number" inputmode="numeric" id="f-h" min="0" max="48" placeholder="h" value="${D.duration?hrs:''}" style="max-width:56px"><span style="color:var(--fg2)">h</span><input type="number" inputmode="numeric" id="f-m" min="0" max="59" placeholder="m" value="${D.duration?mins:''}" style="max-width:56px"><span style="color:var(--fg2)">m</span></div></div>
+   <div class="hint" id="esthint"></div>
+   <div class="gt">Rating</div><div class="grp"><div class="row"><span>Flight</span><div class="stars" id="stars"></div></div></div>
+   <div class="gt">Notes</div><div class="grp"><div class="row area"><textarea id="f-note" placeholder="How was it?">${esc(D.note)}</textarea></div></div>
+   <div class="gt">Photos</div><div class="photos" id="phgrid"></div>
+   <datalist id="dl-al">${uAl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-ac">${uAc.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+   </div></div>`);
+  fel.dataset.kind='form';fillEnds();drawStars();drawPhotos();estHint();D._snap=formVals()}
+function fillEnds(){['from','to'].forEach(k=>{const el=$('#v-'+k);if(!el)return;const a=D[k]?apShow(D[k]):null;el.textContent=a?`${a.iata} · ${a.city}`:'Select'})}
+function estHint(){const h=$('#esthint');if(!h)return;const km=dist(apOf(D.from),apOf(D.to));const m=(+$('#f-h').value||0)*60+(+$('#f-m').value||0);
+  h.textContent=km?`${fmtDist(km)} · ${m?'':`Leave duration empty to use an estimate of ${fmtDur(estMin(km))}.`}`:'Choose both airports to see distance.'}
+function drawStars(){const s=$('#stars');if(s)s.innerHTML=[1,2,3,4,5].map(n=>`<button type="button" data-star="${n}" class="${n<=D.rating?'on':''}" aria-label="${n} star${n>1?'s':''}">★</button>`).join('')}
+function drawPhotos(){const g=$('#phgrid');if(!g)return;
+  g.innerHTML=D.photos.map(p=>`<div class="ph"><img data-pid="${p}" alt=""><button type="button" class="x" data-rm="${p}" aria-label="Remove photo">×</button></div>`).join('')+`<button type="button" class="add" data-act="addphoto" aria-label="Add photos">${ic('cam')}</button>`;
+  $$('img[data-pid]',g).forEach(im=>{const a=D._added[im.dataset.pid];if(a)im.src=a});hydrate(g)}
+function saveForm(){
+  const v=id=>($('#'+id)||{}).value||'';
+  D.date=v('f-date');if(!D.date||!D.from||!D.to){toast('Choose a date, origin and destination');return}
+  Object.assign(D,{airline:v('f-airline').trim(),airlineCode:v('f-code').trim().toUpperCase(),flightNo:v('f-no').trim().toUpperCase(),aircraft:v('f-ac').trim(),aircraftCode:v('f-code2').trim().toUpperCase(),reg:v('f-reg').trim().toUpperCase(),seat:v('f-seat').trim().toUpperCase(),depTime:v('f-dep'),arrTime:v('f-arr'),note:v('f-note').trim()});
+  D.duration=(+v('f-h')||0)*60+(+v('f-m')||0);
+  const k=AIRLINES.find(a=>a[0].toLowerCase()===D.airline.toLowerCase());if(k){if(!D.airlineCode)D.airlineCode=k[1];D.airlineIcao=k[2]}
+  Object.entries(D._added).forEach(([id,d])=>{if(D.photos.includes(id))PH.put(id,d)});D._removed.forEach(id=>PH.del(id));
+  const out={...D};delete out._new;delete out._added;delete out._removed;delete out._snap;
+  const i=flights.findIndex(x=>x.id===out.id);if(i>=0)flights[i]=out;else flights.push(out);
+  persist();closeSheet();render();toast(D._new?'Flight added':'Flight updated')}
+
+/* ---------- stats ---------- */
+function count(list,fn){const m=new Map();list.forEach(x=>{const k=fn(x);if(k)m.set(k,(m.get(k)||0)+1)});return[...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(b[0]))}
+function bars(items,fmt,lead,vf){if(!items.length)return '<div style="color:var(--fg2)">Nothing yet</div>';const mx=items[0][1];return items.map(([k,v])=>`<div class="bar"><span class="n">${lead?lead(k):''}<span class="nt">${esc(fmt?fmt(k):k)}</span></span><span class="v">${vf?vf(v):v}</span><span class="tr"><i style="width:${Math.max(3,v/mx*100)}%"></i></span></div>`).join('')}
+function vStats(){
+  const PF=flights.filter(f=>!isFut(f));
+  const years=[...new Set(PF.map(f=>f.date.slice(0,4)))].sort().reverse();
+  if(S.sy!=='all'&&!years.includes(S.sy))S.sy='all';
+  const L=PF.filter(f=>S.sy==='all'||f.date.startsWith(S.sy));
+  const head=`<header class="large"><h1>Stats</h1></header>`;
+  if(!PF.length)return `<div class="scroll"><div class="wrap">${head}<div class="empty"><p>Add a few flights and your numbers, records and charts will show up here.</p></div></div></div>`;
+  const X=L.map(f=>({f,...fx(f)}));const km=X.reduce((s,x)=>s+x.km,0),min=X.reduce((s,x)=>s+x.min,0);
+  const aps=new Map();X.forEach(x=>[x.f.from,x.f.to].forEach(c=>aps.set(c,(aps.get(c)||0)+1)));
+  const ctry=new Map();aps.forEach((n,c)=>{const a=apOf(c);if(a&&a.country){const e=ctry.get(a.country)||{n:0,codes:[]};e.n+=n;e.codes.push(a.iata);ctry.set(a.country,e)}});
+  const byD=S.by==='distance';
+  const rank=fn=>{const m=new Map();X.forEach(x=>{[].concat(fn(x)||[]).filter(Boolean).forEach(k=>m.set(k,(m.get(k)||0)+(byD?x.km:1)))});return[...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0])))};
+  const vf=v=>byD?fmtNum(distVal(v))+' '+distUnit():v;
+  const air=rank(x=>x.f.airline),acs=rank(x=>x.f.aircraft),topAp=rank(x=>[x.f.from,x.f.to]).slice(0,8);
+  const routes=rank(x=>[x.f.from,x.f.to].sort().join(' – ')).slice(0,6),routesF=count(L,f=>[f.from,f.to].sort().join(' – '));
+  const cls=count(L,f=>CLS[f.cls]),seats=count(L,f=>f.seatType?SEAT[f.seatType]:''),why=count(L,f=>WHY[f.why]);
+  const ys=PF.map(f=>+f.date.slice(0,4)),y0=Math.min(...ys),y1=Math.max(...ys);const per={};PF.forEach(f=>per[f.date.slice(0,4)]=(per[f.date.slice(0,4)]||0)+1);
+  const yrs=[];for(let y=y0;y<=y1;y++)yrs.push(y);const mx=Math.max(...Object.values(per));
+  const withKm=X.filter(x=>x.km>0),longest=[...withKm].sort((a,b)=>b.km-a.km)[0],shortest=[...withKm].sort((a,b)=>a.km-b.km)[0],longT=[...X].sort((a,b)=>b.min-a.min)[0];
+  const first=[...L].sort((a,b)=>a.date.localeCompare(b.date))[0];
+  const rt=x=>x?`${apShow(x.f.from).iata} → ${apShow(x.f.to).iata}`:'';
+  const chips=`<div class="chips"><button data-sy="all" aria-pressed="${S.sy==='all'}">All time</button>${years.map(y=>`<button data-sy="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join('')}</div>`;
+  const earth=km/40075,moon=km/384400*100;
+  const longHaul=X.filter(x=>x.min>=360).length,dom=X.filter(x=>x.a&&x.b&&x.a.country&&x.a.country===x.b.country).length,intl=L.length-dom;
+  const altDist=cfg.units==='mi'?fmtNum(km)+' km':fmtNum(km*0.621371)+' miles',co2=(km*0.122/1000).toFixed(1);
+  const routesAll=new Set(L.map(f=>[f.from,f.to].sort().join('-'))).size,yearsFlying=Math.max(1,new Date().getFullYear()-y0),activeMonths=new Set(L.map(f=>f.date.slice(0,7))).size;
+  const cv=new Map(),tzs=new Set();aps.forEach((n,c)=>{const a=apOf(c);if(!a)return;const k=contOf(a);if(k)cv.set(k,(cv.get(k)||0)+n);if(a.tz)tzs.add(a.tz)});
+  const conts=[...cv.entries()].sort((a,b)=>b[1]-a[1]);
+  const mo=Array(12).fill(0),wd=Array(7).fill(0);L.forEach(f=>{const d=new Date(f.date+'T12:00:00');mo[d.getMonth()]++;wd[(d.getDay()+6)%7]++});
+  const colsHtml=(arr,lb)=>{const m=Math.max(...arr,1);return `<div class="cols">${arr.map((n,i)=>`<div class="${n?'':'z'}"><span>${n||''}</span><i style="height:${n?Math.max(4,n/m*84):2}px"></i>${lb[i]}</div>`).join('')}</div>`};
+  const MN=['January','February','March','April','May','June','July','August','September','October','November','December'],DN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const topI=a=>a.indexOf(Math.max(...a));
+  const nKm=X.filter(x=>x.km>0),avgKm=nKm.length?nKm.reduce((s,x)=>s+x.km,0)/nKm.length:0,avgMin=L.length?min/L.length:0,yAct=new Set(L.map(f=>f.date.slice(0,4))).size;
+  const regs=count(L,f=>f.reg),regType=r=>(L.find(f=>f.reg===r)||{}).aircraft||'',repeat=regs.filter(r=>r[1]>1).length;
+  const rated=L.filter(f=>f.rating),avgR=rated.length?rated.reduce((s,f)=>s+f.rating,0)/rated.length:0,topR=[...rated].sort((a,b)=>b.rating-a.rating||sortF(a,b)).slice(0,5);
+  return `<div class="scroll"><div class="wrap">${head}${chips}
+   <div class="hero passport"><div class="ph"><span>${S.sy==='all'?'ALL-TIME':S.sy} PASSPORT</span><span>${S.sy==='all'?'SINCE '+fmtDate(first.date,{year:'numeric'}):''}</span></div>
+    <div class="two"><div><small>FLIGHTS</small><div class="big">${L.length}</div><div class="lbl">${longHaul} long haul</div></div>
+     <div><small>DISTANCE</small><div class="big">${fmtNum(distVal(km))} <span class="u">${distUnit()}</span></div><div class="lbl">${earth.toFixed(1)}× around the world</div></div></div>
+    <div class="three"><div><small>FLIGHT TIME</small><b>${fmtTot(min)}</b></div><div><small>AIRPORTS</small><b>${aps.size}</b></div><div><small>AIRLINES</small><b>${air.length}</b></div></div>
+    <div class="fun">${dom} domestic · ${intl} international<br>${altDist} · ${moon.toFixed(moon<10?1:0)}% of the way to the Moon<br>About <b>${co2} t</b> of CO₂ per passenger (estimate)</div>
+    <div style="margin-top:14px"><button class="btn sm" data-act="share">Share passport</button></div></div>
+   ${goalCard()}
+   <div class="tiles"><div class="tile"><b>${aps.size}</b><small>Airports</small></div><div class="tile"><b>${ctry.size}</b><small>Countries</small></div><div class="tile"><b>${air.length}</b><small>Airlines</small></div><div class="tile"><b>${acs.length}</b><small>Aircraft types</small></div><div class="tile"><b>${conts.length}</b><small>Continents</small></div><div class="tile"><b>${tzs.size}</b><small>Time zones</small></div><div class="tile"><b>${routesAll}</b><small>Routes</small></div><div class="tile"><b>${S.sy==='all'?yearsFlying:activeMonths}</b><small>${S.sy==='all'?'Years of flying':'Active months'}</small></div></div>
+   ${S.sy==='all'&&yrs.length>1?`<div class="card" style="margin-top:14px"><h3>Flights per year</h3><div class="cols">${yrs.map(y=>{const n=per[y]||0;return `<div class="${n?'':'z'}"><span>${n||''}</span><i style="height:${n?Math.max(4,n/mx*84):2}px"></i>${String(y).slice(2)}</div>`}).join('')}</div></div>`:'<div style="height:14px"></div>'}
+   <div class="card"><h3>When you fly</h3><div style="font-size:0.735rem;color:var(--fg2);margin:-4px 0 4px">By month${L.length?` · busiest is ${MN[topI(mo)]}`:''}</div>${colsHtml(mo,['J','F','M','A','M','J','J','A','S','O','N','D'])}
+    <div style="font-size:0.735rem;color:var(--fg2);margin:14px 0 4px">By weekday${L.length?` · most often ${DN[topI(wd)]}`:''}</div>${colsHtml(wd,['Mon','Tue','Wed','Thu','Fri','Sat','Sun'])}</div>
+   <div class="seg" data-seg="rankby" style="margin:0 0 12px;display:flex"><button style="flex:1" data-v="flights" aria-pressed="${!byD}">Top by flights</button><button style="flex:1" data-v="distance" aria-pressed="${byD}">Top by distance</button></div>
+   <div class="card"><h3>Airlines</h3>${bars(air.slice(0,7),null,k=>airLead(L,k),vf)}</div>
+   <div class="card"><h3>Aircraft</h3>${bars(acs.slice(0,7),null,null,vf)}</div>
+   ${regs.length?`<div class="card"><h3>Tail numbers <small>${regs.length} logged${repeat?` · ${repeat} flown more than once`:''}</small></h3>${bars(regs.slice(0,6),r=>r+(regType(r)?' · '+regType(r):''))}</div>`:''}
+   <div class="card"><h3>Airports <small>${byD?'distance':'visits'}</small></h3>${bars(topAp,c=>{const a=apShow(c);return a.iata+' · '+a.city},null,vf)}</div>
+   <div class="card"><h3>Routes</h3>${bars(routes,null,null,vf)}</div>
+   <div class="card"><h3>Countries <small>${ctry.size}</small></h3><div class="tags">${[...ctry.entries()].sort((a,b)=>b[1].n-a[1].n).map(([c,e])=>`<span class="chip">${esc(c)} · ${e.codes.join(', ')}</span>`).join('')||'<span style="color:var(--fg2)">No data</span>'}</div></div>
+   <div class="card"><h3>Continents <small>${conts.length} of 7</small></h3>${bars(conts)}</div>
+   <div class="card"><h3>Averages</h3>
+    <div class="rec"><span>Distance per flight</span><span>${avgKm?fmtDist(avgKm):'—'}</span></div>
+    <div class="rec"><span>Time per flight</span><span>${fmtDur(avgMin)}</span></div>
+    ${S.sy==='all'?`<div class="rec"><span>Flights per year</span><span>${(L.length/yAct).toFixed(1)}</span></div>`:`<div class="rec"><span>Flights per month</span><span>${(L.length/12).toFixed(1)}</span></div>`}</div>
+   <div class="card"><h3>Records</h3>
+    ${longest?`<div class="rec"><span>Longest</span><span>${rt(longest)} · ${fmtDist(longest.km)}</span></div>`:''}
+    ${shortest&&shortest!==longest?`<div class="rec"><span>Shortest</span><span>${rt(shortest)} · ${fmtDist(shortest.km)}</span></div>`:''}
+    ${longT&&longT.min?`<div class="rec"><span>Longest time</span><span>${rt(longT)} · ${fmtDur(longT.min,longT.est)}</span></div>`:''}
+    <div class="rec"><span>First flight</span><span>${fmtDate(first.date)}</span></div>
+    ${routesF[0]?`<div class="rec"><span>Most flown route</span><span>${esc(routesF[0][0])} · ${routesF[0][1]}×</span></div>`:''}</div>
+   <div class="card"><h3>Ratings <small>${rated.length?`${rated.length} rated · average ${avgR.toFixed(1)} ★`:''}</small></h3>${topR.length?topR.map(f=>`<button class="rec" data-act="open" data-id="${f.id}"><span style="color:var(--warm-ink);letter-spacing:1px">${'★'.repeat(f.rating)}</span><span>${apShow(f.from).iata} → ${apShow(f.to).iata} · ${fmtDate(f.date,{month:'short',year:'numeric'})}</span></button>`).join(''):'<div style="color:var(--fg2)">Rate a flight to see your favourites here.</div>'}</div>
+   <div class="card"><h3>Cabin</h3>${bars(cls)}</div>
+   ${seats.length?`<div class="card"><h3>Seat position</h3>${bars(seats)}</div>`:''}
+   <div class="card"><h3>Purpose</h3>${bars(why)}</div>
+   ${achCard()}</div></div>`}
+
+/* ---------- settings ---------- */
+function vSettings(){
+  return `<div class="scroll"><div class="wrap"><header class="large"><h1>Settings</h1></header>
+   <div class="gt">Profile</div><div class="grp"><div class="row"><label for="set-name">Name</label><input id="set-name" placeholder="Your name" value="${esc(cfg.name||'')}" autocomplete="given-name"></div></div>
+   <div class="hint">Shown on your passport card. English letters work best.</div>
+   <div class="gt">Units</div><div class="grp"><div class="row"><span>Distance</span><div class="seg" data-seg="units"><button data-v="km" aria-pressed="${cfg.units==='km'}">Kilometres</button><button data-v="mi" aria-pressed="${cfg.units==='mi'}">Miles</button></div></div></div>
+   <div class="gt">Backup and import</div><div class="grp">
+    <button class="row link" data-act="export-json"><span>Export backup (JSON)</span><span class="val">with photos</span></button>
+    <button class="row link" data-act="export-csv"><span>Export flights (CSV)</span><span class="val">FlightDiary format</span></button>
+    <button class="row link" data-act="import"><span>Import CSV or backup</span><span class="val"></span></button>
+    ${SEED?`<button class="row link" data-act="seed"><span>Load my FlightDiary export</span><span class="val">${csvToFlights(SEED).list.length} flights</span></button>`:''}</div>
+   <div class="hint">Flights are stored only in this browser on this device. Clearing Safari website data deletes them, so export a backup now and then. Importing skips flights that are already in the log.</div>
+   <div class="gt">Data</div><div class="grp"><button class="row" id="wipe" data-act="wipe" style="color:var(--bad)"><span>Delete all flights</span></button></div>
+   ${canSave?'':'<div class="hint" style="color:var(--bad)">Browser storage is unavailable, so nothing you add will be kept after you close this page.</div>'}
+   <div class="hint" style="text-align:center">${flights.length} flight${flights.length===1?'':'s'} · ${AP.length.toLocaleString('en-US')} airports built in</div></div></div>`}
+
+/* ---------- map ---------- */
+const M={mode:'flat',year:'all',t:null,rot:[0,-25],gk:1,sel:null};
+function vMap(){
+  const years=[...new Set(flights.map(f=>f.date.slice(0,4)))].sort().reverse();
+  if(M.year!=='all'&&!years.includes(M.year))M.year='all';
+  return `<div id="mapwrap"><svg id="mapsvg" role="img" aria-label="Map of your flights"><path id="m-sphere" fill="var(--ocean)"/><path id="m-grat" fill="none" stroke="var(--grat)" stroke-width=".6"/><path id="m-land" fill="var(--land)" stroke="none"/><path id="m-vis" fill="var(--data)" fill-opacity=".4" stroke="none"/><path id="m-bord" fill="none" stroke="var(--border)" stroke-width=".5"/><g id="m-arcs"></g><g id="m-dots"></g></svg>
+   <div class="mtop"><div class="hrow"><div class="mtitle pill">Map</div><div class="mseg pill" data-seg="mapmode"><button data-v="flat" aria-pressed="${M.mode==='flat'}">Flat</button><button data-v="globe" aria-pressed="${M.mode==='globe'}">Globe</button></div></div>
+    <div class="chips"><button data-my="all" aria-pressed="${M.year==='all'}">All</button>${years.map(y=>`<button data-my="${y}" aria-pressed="${M.year===y}">${y}</button>`).join('')}</div></div>
+   ${M.mode==='globe'?`<div class="zoom pill"><button data-act="gzin" aria-label="Zoom in">+</button><button data-act="gzout" aria-label="Zoom out">−</button></div>`:''}
+   <div class="mbot"><div id="msel"></div><div class="msum pill" id="msum"></div></div></div>`}
+let MR=null;
+function mapSetup(){
+  const wrap=$('#mapwrap');if(!wrap||!window.d3)return;
+  const W=wrap.clientWidth||360,H=wrap.clientHeight||520;
+  const svg=d3.select('#mapsvg').attr('viewBox',`0 0 ${W} ${H}`);
+  const L=flights.filter(f=>M.year==='all'||f.date.startsWith(M.year));
+  const rm=new Map(),dots=new Map();
+  L.forEach(f=>{const a=apOf(f.from),b=apOf(f.to);if(a)dots.set(a.iata,(dots.get(a.iata)||0)+1);if(b)dots.set(b.iata,(dots.get(b.iata)||0)+1);
+    if(!a||!b||a===b)return;const k=[a.iata,b.iata].sort().join('-');const r=rm.get(k)||{k,a,b,fl:[]};r.fl.push(f);rm.set(k,r)});
+  const routes=[...rm.values()].map(r=>({...r,up:r.fl.every(isFut),geo:{type:'LineString',coordinates:[[r.a.lon,r.a.lat],[r.b.lon,r.b.lat]]}}));
+  const pts=[...dots.keys()].map(c=>({...apOf(c),n:dots.get(c)}));
+  const PL=L.filter(f=>!isFut(f));const km=PL.reduce((s,f)=>s+fx(f).km,0),mins=PL.reduce((s,f)=>s+fx(f).min,0);
+  const cset=new Set();PL.forEach(f=>[f.from,f.to].forEach(c=>{const a=apOf(c);if(a&&a.country)cset.add(a.country)}));
+  $('#msum').innerHTML=`<div><b>${PL.length}</b><small>flights</small></div><div><b>${fmtNum(distVal(km))}</b><small>${distUnit()}</small></div><div><b>${cset.size}</b><small>countries</small></div><div><b>${fmtTot(mins)}</b><small>in the air</small></div>`;
+  const vis=new Set([...cset].map(c=>CALIAS[c]||c));
+  const visFeat=(WORLD&&window.topojson)?{type:'FeatureCollection',features:topojson.feature(WORLD,WORLD.objects.countries).features.filter(f=>vis.has(f.properties.name))}:null;
+  const world=WORLD;
+  const land=world?topojson.feature(world,world.objects.land):null,bord=world?topojson.mesh(world,world.objects.countries,(a,b)=>a!==b):null;
+  const grat=d3.geoGraticule10();
+  const flat=M.mode==='flat';
+  let proj=flat?d3.geoNaturalEarth1().fitExtent([[6,150],[W-6,H-120]],{type:'Sphere'}):d3.geoOrthographic().clipAngle(90).precision(.4);
+  const s0=proj.scale(),t0=proj.translate();
+  if(!flat&&pts.length&&M.rot[2]!==1){const lo=d3.mean(pts,p=>p.lon),la=d3.mean(pts,p=>p.lat);M.rot=[-lo,-la*0.8,1]}
+  const R=()=>Math.min(W,H-190)/2*.98*M.gk;
+  const path=d3.geoPath(proj);
+  M.t=M.t||d3.zoomIdentity;
+  const arcs=svg.select('#m-arcs').selectAll('g.r').data(routes,d=>d.k).join(e=>{const g=e.append('g').attr('class','r');g.append('path').attr('class','hit').attr('fill','none').attr('stroke','transparent').attr('stroke-width',16).style('cursor','pointer');g.append('path').attr('class','line').attr('fill','none').attr('stroke-linecap','round');return g});
+  const dg=svg.select('#m-dots').selectAll('g.d').data(pts,d=>d.iata).join(e=>{const g=e.append('g').attr('class','d');g.append('circle').attr('fill','var(--data)').attr('stroke','var(--land)').attr('stroke-width',1.5);g.append('text').attr('class','lbl-ap').attr('text-anchor','middle');return g});
+  function draw(){
+    if(flat){proj.scale(s0*M.t.k).translate([t0[0]*M.t.k+M.t.x,t0[1]*M.t.k+M.t.y])}
+    else{proj.scale(R()).translate([W/2,(H-190)/2+150]).rotate([M.rot[0],M.rot[1]])}
+    svg.select('#m-sphere').attr('d',path({type:'Sphere'}));svg.select('#m-grat').attr('d',path(grat));
+    if(land){svg.select('#m-land').attr('d',path(land));svg.select('#m-bord').attr('d',path(bord));svg.select('#m-vis').attr('d',path(visFeat))}
+    arcs.select('.line').attr('d',d=>path(d.geo)).attr('stroke',d=>d.up||M.sel===d.k?'var(--warm)':'var(--data)').attr('stroke-dasharray',d=>d.up?'6 6':null).attr('stroke-width',d=>M.sel===d.k?2.6:Math.min(3,1.2+d.fl.length*.25)).attr('opacity',d=>M.sel&&M.sel!==d.k?.35:.85);
+    arcs.select('.hit').attr('d',d=>path(d.geo));
+    const c=flat?null:[-M.rot[0],-M.rot[1]];
+    dg.each(function(d){const p=proj([d.lon,d.lat]);const vis=p&&(flat||d3.geoDistance(c,[d.lon,d.lat])<Math.PI/2-.02);const g=d3.select(this).style('display',vis?null:'none');if(!vis)return;
+      g.select('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',3+Math.min(3,d.n*.4));
+      g.select('text').attr('x',p[0]).attr('y',p[1]-8).text((flat?M.t.k>=4.5:M.gk>=2)||d.n>=4?d.iata:'')})}
+  arcs.on('click',(e,d)=>{M.sel=M.sel===d.k?null:d.k;selCard();draw()});
+  function selCard(){const el=$('#msel');if(!el)return;const r=routes.find(x=>x.k===M.sel);if(!r){el.innerHTML='';return}
+    const km=dist(r.a,r.b);const last=[...r.fl].sort(sortF)[0];
+    el.innerHTML=`<button class="msel pill" data-act="open" data-id="${last.id}"><span class="code">${r.a.iata}</span>${ic('plane').replace('class="ic "','class="ic" style="transform:rotate(90deg);color:var(--data)"')}<span class="code">${r.b.iata}</span><span style="margin-left:auto;text-align:right"><b>${r.fl.length} flight${r.fl.length>1?'s':''}</b><br><small style="color:var(--fg2)">${fmtDist(km)} each way</small></span></button>`}
+  svg.on('.zoom',null).on('.drag',null);
+  if(flat){const z=d3.zoom().scaleExtent([1,12]).translateExtent([[-W,-H],[2*W,2*H]]).on('zoom',e=>{M.t=e.transform;draw()});svg.call(z).on('dblclick.zoom',null);
+    if(M.t===d3.zoomIdentity&&pts.length){proj.scale(s0).translate(t0);const q=pts.map(p=>proj([p.lon,p.lat]));
+      const x0=d3.min(q,d=>d[0]),x1=d3.max(q,d=>d[0]),y0=d3.min(q,d=>d[1]),y1=d3.max(q,d=>d[1]);
+      const k=Math.max(1,Math.min(7,(W-90)/Math.max(x1-x0,40),(H-330)/Math.max(y1-y0,40)));
+      M.t=d3.zoomIdentity.translate(W/2-k*(x0+x1)/2,(150+(H-120))/2-k*(y0+y1)/2).scale(k)}
+    svg.call(z.transform,M.t)}
+  else svg.call(d3.drag().on('drag',e=>{M.rot[0]+=e.dx*.35/M.gk;M.rot[1]=Math.max(-85,Math.min(85,M.rot[1]-e.dy*.35/M.gk));draw()}));
+  MR={draw};selCard();draw()}
+
+/* ---------- airline logo in lists ---------- */
+function airLead(L,name){const f=L.find(x=>x.airline===name&&x.airlineCode)||L.find(x=>x.airline===name)||{airline:name};
+  const l=logoOf(f);const sz='width:22px;min-width:22px;height:22px';
+  return l?`<img class="al logo" src="${l}" alt="" style="${sz}">`:`<span class="al" style="--h:${hue(f.airlineCode||name)};${sz};font-size:0.647rem">${esc(f.airlineCode||name.slice(0,2).toUpperCase())}</span>`}
+
+/* ---------- goals ---------- */
+const goals=LS.get('fl.goals',{});
+const goalYear=()=>S.sy==='all'?String(new Date().getFullYear()):S.sy;
+function goalCard(){
+  const y=goalYear(),g=goals[y]||{};const yl=flights.filter(f=>!isFut(f)&&f.date.startsWith(y));const km=yl.reduce((s,f)=>s+fx(f).km,0);
+  const row=(lbl,cur,tgt,fmt)=>{const p=Math.min(100,cur/tgt*100);return `<div class="bar"><span class="n"><span class="nt">${lbl}</span></span><span class="v">${fmt(cur)} / ${fmt(tgt)}</span><span class="tr"><i style="width:${Math.max(2,p)}%;${p>=100?'background:var(--good)':''}"></i></span></div>`};
+  const has=g.flights||g.km;
+  return `<div class="card"><h3>${y} goals <button class="btn sm" data-act="goals" style="padding:4px 12px;font-size:0.765rem">${has?'Edit':'Set goals'}</button></h3>${has?(g.flights?row('Flights',yl.length,g.flights,fmtNum):'')+(g.km?row('Distance',distVal(km),distVal(g.km),n=>fmtNum(n)+' '+distUnit()):''):'<div style="color:var(--fg2)">Set a target for flights or distance and follow your progress through the year.</div>'}</div>`}
+function goalSheet(){
+  const y=goalYear(),g=goals[y]||{};
+  openSheet(`<div class="shead"><button data-act="close">Cancel</button><b>${y} goals</b><button data-act="savegoal">Save</button></div>
+   <div class="sbody"><div class="wrap"><div class="grp">
+    <div class="row"><label for="g-f">Flights</label><input id="g-f" type="number" inputmode="numeric" min="0" placeholder="e.g. 12" value="${g.flights||''}"></div>
+    <div class="row"><label for="g-d">Distance (${distUnit()})</label><input id="g-d" type="number" inputmode="numeric" min="0" placeholder="e.g. 40000" value="${g.km?Math.round(distVal(g.km)):''}"></div></div>
+    <div class="hint">Leave a field empty to skip it. Both empty clears the goal.</div></div></div>`)}
+function saveGoal(){
+  const y=goalYear(),f=Math.max(0,Math.round(+$('#g-f').value||0)),d=Math.max(0,+$('#g-d').value||0);
+  const km=cfg.units==='mi'?d/0.621371:d;
+  if(f||km)goals[y]={flights:f,km:Math.round(km)};else delete goals[y];
+  LS.set('fl.goals',goals);closeSheet();render()}
+
+/* ---------- achievements ---------- */
+function achCard(){
+  const PF=flights.filter(f=>!isFut(f)),X=PF.map(f=>({f,...fx(f)}));
+  const tot=X.reduce((s,x)=>s+x.km,0),mins=X.reduce((s,x)=>s+x.min,0),n=PF.length;
+  const ctr=new Set();X.forEach(x=>[x.a,x.b].forEach(a=>a&&a.country&&ctr.add(a.country)));
+  const al=new Set(PF.map(f=>f.airline).filter(Boolean)),ac=new Set(PF.map(f=>f.aircraft).filter(Boolean));
+  const maxMin=Math.max(0,...X.map(x=>x.min)),maxKm=Math.max(0,...X.map(x=>x.km));
+  const perY={};PF.forEach(f=>perY[f.date.slice(0,4)]=(perY[f.date.slice(0,4)]||0)+1);const bestY=Math.max(0,...Object.values(perY));
+  const A=(t,d,ico,cur,tgt)=>({t,d,ico,cur:Math.min(cur,tgt),tgt});
+  const L=[A('First takeoff','Log your first flight','plane',n,1),A('Frequent flyer','10 flights','plane',n,10),A('Regular','25 flights','plane',n,25),A('Seasoned','50 flights','plane',n,50),A('Centurion','100 flights','plane',n,100),
+   A('Around the world','Fly 40,075 km in total','map',tot,40075),A('Halfway to the Moon','Fly 192,200 km in total','map',tot,192200),A('To the Moon','Fly 384,400 km in total','map',tot,384400),
+   A('Explorer','Visit 5 countries','map',ctr.size,5),A('Globetrotter','Visit 10 countries','map',ctr.size,10),A('Citizen of the world','Visit 25 countries','map',ctr.size,25),
+   A('Airline sampler','Fly 5 different airlines','trophy',al.size,5),A('Airline collector','Fly 10 different airlines','trophy',al.size,10),A('Aircraft spotter','Fly 10 aircraft types','trophy',ac.size,10),
+   A('Long haul','A flight of 8 hours or more','chart',maxMin,480),A('Intercontinental','A flight of 5,000 km or more','chart',maxKm,5000),A('Busy year','10 flights in one year','chart',bestY,10),
+   A('Up front','Fly Business or First','star',PF.some(f=>f.cls===2||f.cls===3)?1:0,1),A('A day in the sky','24 hours in the air','plane',mins,1440),A('A week in the sky','168 hours in the air','plane',mins,10080),
+   A('Photographer','Add a photo to a flight','cam',PF.some(f=>(f.photos||[]).length)?1:0,1),A('Critic','Rate 5 flights','star',PF.filter(f=>f.rating).length,5)];
+  const done=L.filter(a=>a.cur>=a.tgt),rest=L.filter(a=>a.cur<a.tgt).sort((a,b)=>b.cur/b.tgt-a.cur/a.tgt);
+  const it=a=>{const ok=a.cur>=a.tgt;return `<div class="ach ${ok?'on':''}"><span class="medal">${ic(a.ico)}</span><b>${a.t}</b><small>${ok?a.d:Math.min(99,Math.floor(a.cur/a.tgt*100))+'% · '+a.d}</small></div>`};
+  return `<div class="card"><h3>Achievements <small>${done.length} of ${L.length} · all time</small></h3><div class="achs">${done.concat(rest).map(it).join('')}</div></div>`}
+
+/* ---------- passport share card ---------- */
+const PS={uv:false,list:[],label:''};
+const flagOf=c=>{const i=ISO[c];return i&&i.length===2?String.fromCodePoint(...[...i.toUpperCase()].map(ch=>0x1F1E6+ch.charCodeAt(0)-65)):''};
+function shareSheet(){
+  const list=flights.filter(f=>!isFut(f)&&(S.sy==='all'||f.date.startsWith(S.sy)));if(!list.length)return;
+  PS.uv=false;PS.list=list;PS.label=S.sy==='all'?'All time':S.sy;
+  const el=openSheet(`<div class="shead"><button data-act="close">Close</button><b>Passport</b><button data-act="savesum">Save</button></div>
+   <div class="sbody"><div class="wrap"><canvas id="sumcv" width="1080" height="1660" style="width:100%;height:auto;border-radius:20px;display:block" aria-label="Passport card for ${esc(PS.label)}"></canvas>
+   <div style="text-align:center;margin:16px 0 4px"><button class="btn sm" id="uvbtn" data-act="uv" aria-pressed="false">Blacklight</button></div>
+   <div class="hint" style="text-align:center;margin-top:8px">Save the image, then share it from Photos or Files. Blacklight reveals extra stats.</div></div></div>`);
+  drawPassport($('#sumcv',el),PS.list,PS.label,PS.uv)}
+function drawPassport(cv,list,label,uv){
+  const c=cv.getContext('2d'),W=1080,H=1660,X0=60,Y0=60,CW=960,CH=1540,FONT='ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif',MONO='ui-monospace,Menlo,monospace';
+  const P=uv?{bg:'#1A1744',strip:'#26215C',stripInk:'#85B7EB',sea:'#0F0D2E',hatch:'rgba(127,119,221,.5)',arc:'#5DCAA5',dot:'#9FE1CB',ink:'#E6F1FB',dim:'rgba(230,241,251,.62)',mrzBg:'#26215C',mrzInk:'#5DCAA5',chip:'#26215C',acc:'#9FE1CB'}
+    :{bg:'#D9D6F5',strip:'#CECBF6',stripInk:'#3C3489',sea:'#E4E2FA',hatch:'#7F77DD',arc:'#3C3489',dot:'#534AB7',ink:'#26215C',dim:'rgba(38,33,92,.66)',mrzBg:'#CECBF6',mrzInk:'#3C3489',chip:'#EEEDFE',acc:'#534AB7'};
+  const rr=(x,y,w,h,r)=>{c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()};
+  const T=(s,x,y,font,col,al)=>{c.font=font;c.fillStyle=col;c.textAlign=al||'left';c.fillText(s,x,y)};
+  const X=list.map(f=>({f,...fx(f)})),km=X.reduce((s,x)=>s+x.km,0),mins=X.reduce((s,x)=>s+x.min,0);
+  const apc=new Map();X.forEach(x=>[x.f.from,x.f.to].forEach(cd=>apc.set(cd,(apc.get(cd)||0)+1)));
+  const apSorted=[...apc.entries()].sort((a,b)=>b[1]-a[1]);const home=apSorted.length?apShow(apSorted[0][0]).iata:'---';
+  const airN=new Set(list.map(f=>f.airline).filter(Boolean)).size;
+  const cn=new Map();X.forEach(x=>[x.a,x.b].forEach(a=>a&&a.country&&cn.set(a.country,(cn.get(a.country)||0)+1)));
+  const flags=[...cn.entries()].sort((a,b)=>b[1]-a[1]).map(e=>flagOf(e[0])).filter(Boolean);
+  const dom=X.filter(x=>x.a&&x.b&&x.a.country&&x.a.country===x.b.country).length,lh=X.filter(x=>x.min>=360).length;
+  const dmy=d=>String(d.getDate()).padStart(2,'0')+' '+d.toLocaleString('en-GB',{month:'short'}).toUpperCase()+' '+String(d.getFullYear()).slice(2);
+  const first=[...list].sort((a,b)=>a.date.localeCompare(b.date))[0];const fd=new Date(first.date+'T12:00:00');
+  const mon=d=>d.toLocaleString('en-GB',{month:'short'}).toUpperCase()+' '+String(d.getFullYear()).slice(2);
+  c.fillStyle='#0C0A26';c.fillRect(0,0,W,H);
+  c.save();rr(X0,Y0,CW,CH,56);c.clip();
+  c.fillStyle=P.bg;c.fillRect(X0,Y0,CW,CH);
+  c.fillStyle=P.strip;c.fillRect(X0,Y0,CW,76);
+  const plane=new Path2D('M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z');
+  const seq=['p','p',home,'p','p','p',home,'p','p'],step=CW/seq.length;
+  seq.forEach((s,i)=>{const x=X0+step*(i+.5),y=Y0+38;if(s==='p'){c.save();c.translate(x,y);c.rotate(Math.PI/2);c.scale(1.5,1.5);c.translate(-12,-12);c.fillStyle=P.stripInk;c.globalAlpha=.7;c.fill(plane);c.restore()}else T(s,x,y+10,`700 30px ${FONT}`,P.stripInk,'center')});
+  const my=Y0+76,mh=500;
+  c.save();c.beginPath();c.rect(X0,my,CW,mh);c.clip();
+  c.fillStyle=P.sea;c.fillRect(X0,my,CW,mh);
+  if(window.d3){
+    const proj=d3.geoNaturalEarth1().fitExtent([[X0,my],[X0+CW,my+mh]],{type:'Sphere'});const s0=proj.scale(),t0=proj.translate();
+    const pts=[];X.forEach(x=>{if(x.a)pts.push([x.a.lon,x.a.lat]);if(x.b)pts.push([x.b.lon,x.b.lat])});
+    if(pts.length){const q=pts.map(p=>proj(p));const x0=d3.min(q,d=>d[0]),x1=d3.max(q,d=>d[0]),y0=d3.min(q,d=>d[1]),y1=d3.max(q,d=>d[1]);
+      const k=Math.max(1,Math.min(5,CW*.8/Math.max(x1-x0,40),mh*.78/Math.max(y1-y0,40)));
+      proj.scale(s0*k).translate([t0[0]*k+(X0+CW/2-k*(x0+x1)/2),t0[1]*k+(my+mh/2-k*(y0+y1)/2)])}
+    const path=d3.geoPath(proj,c);
+    if(WORLD&&window.topojson){const hc=document.createElement('canvas');hc.width=hc.height=14;const h=hc.getContext('2d');h.strokeStyle=P.hatch;h.lineWidth=2.2;h.beginPath();h.moveTo(-2,16);h.lineTo(16,-2);h.moveTo(-2,2);h.lineTo(2,-2);h.moveTo(12,16);h.lineTo(16,12);h.stroke();
+      c.fillStyle=c.createPattern(hc,'repeat');c.beginPath();path(topojson.feature(WORLD,WORLD.objects.land));c.fill();
+      c.strokeStyle=P.hatch;c.lineWidth=1.4;c.stroke()}
+    const seen=new Set();c.lineCap='round';
+    if(uv){c.shadowColor=P.arc;c.shadowBlur=14}
+    X.forEach(x=>{if(!x.a||!x.b||x.a===x.b)return;const kk=[x.a.iata,x.b.iata].sort().join('-');if(seen.has(kk))return;seen.add(kk);
+      c.beginPath();path({type:'LineString',coordinates:[[x.a.lon,x.a.lat],[x.b.lon,x.b.lat]]});c.strokeStyle=P.arc;c.lineWidth=4.5;c.stroke()});
+    c.shadowBlur=0;
+    const aps=new Set();X.forEach(x=>[x.a,x.b].forEach(a=>a&&aps.add(a)));
+    aps.forEach(a=>{const p=proj([a.lon,a.lat]);if(!p)return;c.beginPath();c.arc(p[0],p[1],10,0,7);c.fillStyle=P.dot;c.fill();c.lineWidth=4;c.strokeStyle=P.bg;c.stroke()})}
+  c.restore();
+  const shown=flags.slice(0,9),fy=my+mh+78,fs=96,fx0=X0+CW/2-(shown.length-1)*fs/2-(flags.length>9?50:0);
+  c.textBaseline='middle';shown.forEach((f,i)=>T(f,fx0+i*fs,fy,'68px "Apple Color Emoji","Segoe UI Emoji",sans-serif',P.ink,'center'));
+  if(flags.length>9)T('+'+(flags.length-9),fx0+shown.length*fs-10,fy,`700 34px ${FONT}`,P.dim,'center');
+  c.textBaseline='alphabetic';
+  const py=fy+72;
+  c.setLineDash([16,12]);c.lineWidth=3;c.strokeStyle=P.hatch;c.beginPath();c.moveTo(X0+44,py);c.lineTo(X0+CW-44,py);c.stroke();c.setLineDash([]);
+  c.fillStyle='#0C0A26';[X0,X0+CW].forEach(x=>{c.beginPath();c.arc(x,py,28,0,7);c.fill()});
+  const tl=(label==='All time'?'ALL-TIME':label);
+  T('MY UFLIGHTLY PASSPORT',X0+56,py+84,`700 50px ${FONT}`,P.ink);
+  T(`${tl} · PASSPORT · PASS · PASAPORTE`,X0+56,py+126,`600 26px ${FONT}`,P.dim);
+  T(String(list.length),X0+56,py+300,`800 190px ${FONT}`,P.ink);
+  T(list.length===1?'flight':'flights',X0+60,py+368,`300 70px ${FONT}`,P.acc);
+  const nm=(cfg.name||'').trim();
+  const info=[nm?['Holder',nm]:null,['Authority','uFlightly'],['Place of issue',home],['Date of issue',dmy(new Date())],['Logbook since',mon(fd)]].filter(Boolean);
+  info.forEach((r,i)=>{const y=py+204+i*46;c.font=`500 28px ${FONT}`;const lw=c.measureText(r[0]+'  ').width;T(r[0],X0+500,y,`500 28px ${FONT}`,P.dim);
+    let v=String(r[1]);c.font=`600 28px ${FONT}`;while(c.measureText(v).width>X0+CW-30-(X0+500+lw)&&v.length>3)v=v.slice(0,-1);T(v,X0+500+lw,y,`600 28px ${FONT}`,P.ink)});
+  const sy=py+450,cols=[[0,'Distance',fmtNum(distVal(km))+' '+distUnit()],[300,'Flight time',fmtTot(mins)],[520,'Airports',String(apc.size)],[690,'Airlines',String(airN)]];
+  cols.forEach(([dx,l,v])=>{T(l,X0+56+dx,sy,`500 27px ${FONT}`,P.dim);T(v,X0+56+dx,sy+54,`700 50px ${FONT}`,P.ink)});
+  const ey=sy+96;
+  if(!uv){const chips=[`${dom} domestic`,`${list.length-dom} international`,`${lh} long haul`];let cx=X0+56;
+    chips.forEach(s=>{c.font=`600 28px ${FONT}`;const w=c.measureText(s).width+44;rr(cx,ey,w,56,28);c.fillStyle=P.chip;c.fill();T(s,cx+22,ey+38,`600 28px ${FONT}`,P.ink);cx+=w+14})}
+  else{const lg=[...X].sort((a,b)=>b.km-a.km)[0],ac=count(list,f=>f.aircraft)[0],co2=(km*0.122/1000).toFixed(1);
+    const rows=[['Longest',lg&&lg.km?`${apShow(lg.f.from).iata} to ${apShow(lg.f.to).iata} · ${fmtDist(lg.km)}`:'—'],['Top aircraft',ac?ac[0]:'—'],['Footprint',`about ${co2} t CO2`]];
+    rows.forEach((r,i)=>{T(r[0].toUpperCase(),X0+56,ey+10+i*36,`600 24px ${FONT}`,P.acc);let v=r[1];c.font=`600 30px ${FONT}`;while(c.measureText(v).width>600&&v.length>4)v=v.slice(0,-1);T(v,X0+300,ey+12+i*36,`600 30px ${FONT}`,P.ink)})}
+  const mb=Y0+CH-150;c.fillStyle=P.mrzBg;c.fillRect(X0,mb,CW,150);
+  const nmz=((nm||'TRAVELLER').toUpperCase().replace(/[^A-Z ]/g,'').trim().replace(/ +/g,'<'))||'TRAVELLER';
+  const l1=(`${tl.replace(/[^A-Z0-9]/g,'')}<<${nmz}<<LOGSINCE${mon(fd).replace(/ /g,'')}`).padEnd(42,'<').slice(0,42);
+  const iss=`ISSUED${dmy(new Date()).replace(/ /g,'')}${home}`;const l2=(iss+'<'.repeat(Math.max(2,42-iss.length-11))+'UFLIGHTLY<<').slice(0,42);
+  T(l1,X0+30,mb+62,`600 33px ${MONO}`,P.mrzInk);T(l2,X0+30,mb+110,`600 33px ${MONO}`,P.mrzInk);
+  c.restore()}
+
+/* ---------- add an airport by hand ---------- */
+function newAirport(cb){
+  const ctrs=[...new Set(AP.map(a=>a.country))].sort();
+  const el=openSheet(`<div class="shead"><button data-act="close">‹ Back</button><b>New airport</b><button id="apsave">Save</button></div>
+   <div class="sbody"><div class="wrap">
+   <div class="grp"><div class="row"><label for="n-code">Code</label><input id="n-code" maxlength="4" placeholder="XYZ" autocapitalize="characters" autocomplete="off"></div>
+    <div class="row"><label for="n-name">Airport</label><input id="n-name" placeholder="Example Field" autocomplete="off"></div>
+    <div class="row"><label for="n-city">City</label><input id="n-city" placeholder="Springfield" autocomplete="off"></div>
+    <div class="row"><label for="n-ctry">Country</label><input id="n-ctry" list="dl-ct" placeholder="United States" autocomplete="off"></div></div>
+   <div class="gt">Location</div><div class="grp">
+    <div class="row"><label for="n-lat">Latitude</label><input id="n-lat" type="number" step="any" inputmode="decimal" placeholder="40.713"></div>
+    <div class="row"><label for="n-lon">Longitude</label><input id="n-lon" type="number" step="any" inputmode="decimal" placeholder="-74.006"></div>
+    <button class="row link" id="nmap"><span>Pick on a map</span><span class="val"></span></button></div>
+   <div class="hint">Use the 3-letter IATA code, or the 4-letter ICAO code. The location is used to draw the route and measure distance.</div>
+   <datalist id="dl-ct">${ctrs.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div></div>`);
+  $('#nmap',el).onclick=()=>mapPicker((la,lo)=>{$('#n-lat').value=la;$('#n-lon').value=lo});
+  $('#apsave',el).onclick=()=>{
+    const code=$('#n-code').value.trim().toUpperCase(),name=$('#n-name').value.trim(),city=$('#n-city').value.trim(),country=$('#n-ctry').value.trim();
+    const lat=parseFloat($('#n-lat').value),lon=parseFloat($('#n-lon').value);
+    if(!/^[A-Z0-9]{3,4}$/.test(code)){toast('Enter a 3 or 4 letter airport code');return}
+    if(!name&&!city){toast('Enter a name or a city');return}
+    if(!(lat>=-90&&lat<=90)||!(lon>=-180&&lon<=180)){toast('Enter a valid latitude and longitude, or pick on the map');return}
+    addCustom({iata:code,icao:code.length===4?code:'',name:name||city,city:city||name,country,lat,lon});
+    closeSheet();cb(code)}}
+function mapPicker(cb){
+  const el=openSheet(`<div class="shead"><button data-act="close">‹ Back</button><b>Pick location</b><button id="mpok" disabled>Use</button></div>
+   <div style="flex:1;min-height:0;position:relative;background:var(--ocean)"><svg id="pksvg" style="width:100%;height:100%;touch-action:none"><path id="pk-land" fill="var(--land)" stroke="var(--border)" stroke-width=".5"/><circle id="pk-dot" r="7" fill="var(--warm)" stroke="#fff" stroke-width="2" style="display:none"/></svg>
+   <div class="hint" style="position:absolute;left:0;right:0;bottom:10px;text-align:center;margin:0">Pinch to zoom, then tap to place the pin</div></div>`);
+  const sv=$('#pksvg',el),W=sv.clientWidth||360,H=sv.clientHeight||500;
+  if(!window.d3||!WORLD||!window.topojson){toast('The map could not be loaded. Enter the coordinates instead.');closeSheet();return}
+  const proj=d3.geoNaturalEarth1().fitExtent([[4,4],[W-4,H-4]],{type:'Sphere'}),s0=proj.scale(),t0=proj.translate(),land=topojson.feature(WORLD,WORLD.objects.land),path=d3.geoPath(proj);
+  let t=d3.zoomIdentity,pt=null;const ok=$('#mpok',el);
+  const draw=()=>{proj.scale(s0*t.k).translate([t0[0]*t.k+t.x,t0[1]*t.k+t.y]);$('#pk-land',el).setAttribute('d',path(land));
+    const dot=$('#pk-dot',el);if(pt){const p=proj([pt[1],pt[0]]);dot.setAttribute('cx',p[0]);dot.setAttribute('cy',p[1]);dot.style.display=''}};
+  const z=d3.zoom().scaleExtent([1,60]).translateExtent([[-W,-H],[2*W,2*H]]).on('zoom',e=>{t=e.transform;draw()});
+  const s=d3.select(sv);s.call(z).on('dblclick.zoom',null);
+  sv.addEventListener('click',e=>{const r=sv.getBoundingClientRect();const ll=proj.invert([e.clientX-r.left,e.clientY-r.top]);if(ll&&isFinite(ll[0])&&Math.abs(ll[1])<=90){pt=[ll[1],ll[0]];draw();ok.disabled=false}});
+  ok.onclick=()=>{closeSheet();cb(+pt[0].toFixed(4),+pt[1].toFixed(4))};draw()}
+
+/* ---------- events ---------- */
+let SW=null;
+document.addEventListener('touchstart',e=>{const r=e.target.closest('.srow');if(SW&&SW.el!==r){SW.el.classList.remove('open');SW.el.style.setProperty('--tx','0px');SW=null}if(!r)return;const t=e.touches[0];SW={el:r,x:t.clientX,y:t.clientY,dx:0,lock:null,open:r.classList.contains('open')}},{passive:true});
+document.addEventListener('touchmove',e=>{if(!SW)return;const t=e.touches[0],dx=t.clientX-SW.x,dy=t.clientY-SW.y;if(SW.lock==null&&(Math.abs(dx)>8||Math.abs(dy)>8))SW.lock=Math.abs(dx)>Math.abs(dy)?'x':'y';if(SW.lock!=='x')return;const v=Math.max(-152,Math.min(0,(SW.open?-152:0)+dx));SW.dx=v;const c=SW.el.querySelector('.crow');c.style.transition='none';SW.el.classList.add('sw');SW.el.style.setProperty('--tx',v+'px')},{passive:true});
+document.addEventListener('touchend',()=>{if(!SW)return;const c=SW.el.querySelector('.crow');c.style.transition='';if(SW.lock==='x'){const o=SW.dx<-70;SW.el.classList.toggle('open',o);if(!o){const r=SW.el;setTimeout(()=>r.classList.remove('sw'),220)}SW.el.style.setProperty('--tx',o?'-152px':'0px');SW.swiped=Date.now();SW.open=o}},{passive:true});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&D)D[k]=+e.target.value});
+document.addEventListener('click',async e=>{
+  const t=e.target;
+  if(SW&&SW.swiped&&Date.now()-SW.swiped<350){e.preventDefault();return}
+  const op=t.closest('.srow.open');if(op&&!t.closest('.swa')){op.classList.remove('open');op.style.setProperty('--tx','0px');SW=null;return}
+  const tab=t.closest('[data-tab]');if(tab){setTab(tab.dataset.tab);return}
+  const so=t.closest('[data-sort]');if(so){const k=so.dataset.sort;if(S.sort===k)S.dir=S.dir==='desc'?'asc':'desc';else{S.sort=k;S.dir=k==='date'?'desc':'asc'}render(true);return}
+  const sy=t.closest('[data-sy]');if(sy){S.sy=sy.dataset.sy;render();return}
+  const my=t.closest('[data-my]');if(my){M.year=my.dataset.my;M.sel=null;render();return}
+  const sg=t.closest('[data-seg] [data-v]');
+  if(sg){const grp=sg.parentElement.dataset.seg,v=sg.dataset.v;
+    if(grp==='view'){S.view=v;LS.set('fl.view',v);render(true);return}
+    if(grp==='rankby'){S.by=v;render(true);return}
+    if(grp==='units'){cfg.units=v;persistCfg();render();return}
+    if(grp==='mapmode'){M.mode=v;M.t=d3.zoomIdentity;M.sel=null;render();return}
+    if(D&&grp in D){D[grp]=+v;$$('[data-seg="'+grp+'"] button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));return}}
+  const st=t.closest('[data-star]');if(st&&D){const n=+st.dataset.star;D.rating=D.rating===n?0:n;drawStars();return}
+  const rm=t.closest('[data-rm]');if(rm&&D){const id=rm.dataset.rm;D.photos=D.photos.filter(p=>p!==id);if(D._added[id])delete D._added[id];else D._removed.push(id);drawPhotos();return}
+  const a=t.closest('[data-act]');if(!a)return;const act=a.dataset.act,id=a.dataset.id;
+  switch(act){
+    case 'add':form();break;
+    case 'open':detail(id);break;
+    case 'close':closeSheet();break;
+    case 'edit':closeSheet();form(id);break;
+    case 'save':saveForm();break;
+    case 'pick':{const end=a.dataset.end;pickAirport(D[end],c=>{D[end]=c;fillEnds();estHint()});break}
+    case 'addphoto':$('#photofile').click();break;
+    case 'photo':{const l=$('#layers').lastElementChild;const v=document.createElement('button');v.className='viewer';v.innerHTML='<img alt="">';l.appendChild(v);PH.get(a.dataset.pid).then(d=>{if(d)v.firstChild.src=d});v.onclick=()=>v.remove();break}
+    case 'del':confirmDelete(id);break;
+    case 'import':$('#file').click();break;
+    case 'seed':{const r=csvToFlights(SEED);const m=merge(r.list,null);render();toast(`Loaded ${m.add} flights`+(m.dup?`, ${m.dup} already there`:''));break}
+    case 'export-json':exportJSON();break;
+    case 'export-csv':if(!flights.length){toast('No flights to export yet');break}saveFile(`flights-${new Date().toISOString().slice(0,10)}.csv`,flightsToCSV());break;
+    case 'wipe':confirmWipe();break;
+    case 'cancelform':requestCloseForm();break;
+    case 'goals':goalSheet();break;
+    case 'savegoal':saveGoal();break;
+    case 'share':shareSheet();break;
+    case 'savesum':{const cv=$('#sumcv');cv.toBlob(b=>b&&saveFile(`uflightly-passport-${PS.label.replace(/\s+/g,'-').toLowerCase()}${PS.uv?'-blacklight':''}.png`,b));break}
+    case 'uv':{PS.uv=!PS.uv;a.setAttribute('aria-pressed',PS.uv);drawPassport($('#sumcv'),PS.list,PS.label,PS.uv);break}
+    case 'gzin':M.gk=Math.min(4,M.gk*1.4);MR&&MR.draw();break;
+    case 'gzout':M.gk=Math.max(.8,M.gk/1.4);MR&&MR.draw();break;
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='set-name'){cfg.name=e.target.value;persistCfg()}
+  if(e.target.id==='q'){S.q=e.target.value;$('#list').innerHTML=listHtml()}
+  if(e.target.id==='f-airline'&&D){const k=AIRLINES.find(a=>a[0].toLowerCase()===e.target.value.toLowerCase());if(k&&!$('#f-code').value)$('#f-code').value=k[1]}
+  if(e.target.id==='f-h'||e.target.id==='f-m')estHint()});
+$('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;importText(await f.text())});
+$('#photofile').addEventListener('change',async e=>{const fs=[...e.target.files];e.target.value='';if(!D)return;
+  for(const f of fs){const d=await shrink(f);if(d){const id='p'+uid();D._added[id]=d;D.photos.push(id)}}drawPhotos()});
+
+render();
+</script>
