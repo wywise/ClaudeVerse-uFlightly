@@ -228,7 +228,7 @@ h1{font:800 1.882rem/1.1 var(--round);letter-spacing:-.02em;margin:10px 0 8px}
 .msum small{font-size:0.676rem;color:var(--fg2)}
 .msel{padding:12px 16px;display:flex;align-items:center;gap:12px;border-radius:18px;width:100%}
 .msel .code{font-size:1.412rem}
-.zoom{position:absolute;right:16px;bottom:172px;z-index:3;display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
+.zoom{position:absolute;right:16px;bottom:236px;z-index:3;display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
 .zoom button{width:44px;height:44px;display:grid;place-items:center;font-size:1.294rem;font-weight:500}
 .zoom button+button{border-top:.5px solid var(--line)}
 .lbl-ap{font:700 0.647rem var(--round);fill:var(--fg);paint-order:stroke;stroke:var(--ocean);stroke-width:2.6px;stroke-linejoin:round;pointer-events:none}
@@ -275,6 +275,40 @@ h1{font:800 1.882rem/1.1 var(--round);letter-spacing:-.02em;margin:10px 0 8px}
 .as .ag button{border-top:.5px solid var(--line)}.as button.d{color:var(--bad)}
 .as .cancel{background:var(--card);border-radius:20px;font-weight:650}
 @media (prefers-reduced-motion:reduce){.as,.sheet.page{animation:none}.srow .crow{transition:none}}
+#toast.act{pointer-events:auto}
+.row input.sw{appearance:none;-webkit-appearance:none;flex:none;width:51px;height:31px;border-radius:16px;background:var(--fill);position:relative;transition:background .2s;padding:0;margin-left:auto;cursor:pointer}
+.row input.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.row input.sw:checked{background:var(--good)}.row input.sw:checked::after{transform:translateX(20px)}
+#lounge-fields[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.row input.sw,.row input.sw::after{transition:none}}
+.fbtn{display:flex;align-items:center;gap:6px;padding:6px 14px;min-height:36px;font-size:0.765rem;font-weight:650}.fbtn .ic{width:16px;height:16px}
+.mtime{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 8px}.mtime[hidden]{display:none}
+.mtime button{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}.mtime .ic{width:18px;height:18px}
+.mtime input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}.mtime span{font-size:0.735rem;font-weight:650;color:var(--fg2);min-width:64px;text-align:right}
+.mleg{display:flex;flex-wrap:wrap;gap:4px 12px;padding:8px 14px;font-size:0.735rem;font-weight:650}.mleg span{display:flex;align-items:center;gap:5px}.mleg i{width:10px;height:10px;border-radius:50%;display:block}
+.hm{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-template-columns:repeat(var(--w),1fr);gap:2px}
+.hm i,.hm12 i{display:block;aspect-ratio:1;border-radius:2px;background:var(--fill)}.hm i.e{background:none}
+.hm i.l1,.hm12 i.l1{background:color-mix(in srgb,var(--data) 38%,var(--fill))}.hm i.l2,.hm12 i.l2{background:color-mix(in srgb,var(--data) 68%,var(--fill))}.hm i.l3,.hm12 i.l3{background:var(--data)}
+.hmy{display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:center;margin:3px 0}.hmy span{font-size:0.735rem;color:var(--fg2);font-variant-numeric:tabular-nums}
+.hm12{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.hm12 i{aspect-ratio:auto;height:16px;border-radius:4px}.hm12 b{font-size:0.647rem;font-weight:600;color:var(--fg2);text-align:center}
+.wrow{display:flex;gap:8px;align-items:center;margin-top:10px}.wrow input{flex:1;min-width:0;background:var(--fill);border:0;border-radius:10px;padding:9px 12px;outline:none}
+.chip.done{color:var(--good)}
+.story{position:absolute;inset:0;overflow:hidden;color:#fff}
+.sl{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:12px;padding:96px 28px 60px;animation:fade .35s}.sl.on{display:flex}
+.sl.g0{background:linear-gradient(165deg,#0C2748,#2A1F7A)}.sl.g1{background:linear-gradient(165deg,#0A3A4A,#0E7C86)}.sl.g2{background:linear-gradient(165deg,#3A1252,#B4440C)}
+.sl .k{font:700 0.765rem var(--round);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.sl .huge{font:800 5.6rem/1 var(--round);letter-spacing:-.04em;font-variant-numeric:tabular-nums}.sl .big2{font:800 2.3rem/1.08 var(--round);letter-spacing:-.02em}
+.sl p{margin:0;font-size:1.05rem;opacity:.88}.sl .flags{font-size:2rem;line-height:1.3}
+.rowap{display:flex;align-items:center;gap:16px}.rowap b{font:800 3rem/1 var(--round);letter-spacing:-.02em;min-width:5.4rem}.rowap span{font-size:1.05rem}.rowap em{font-style:normal;opacity:.75;font-size:0.882rem}
+.mbars{display:flex;align-items:flex-end;gap:5px;height:90px;margin-top:10px}.mbars i{flex:1;background:rgba(255,255,255,.35);border-radius:4px 4px 2px 2px}.mbars i.hi{background:#fff}
+.sl .btn{position:relative;z-index:6;background:rgba(255,255,255,.18);color:#fff}
+.sprog{position:absolute;left:16px;right:16px;top:max(14px,env(safe-area-inset-top,0px));display:flex;gap:4px;z-index:6}.sprog span{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3)}.sprog span.on{background:#fff}
+.sx{position:absolute;right:8px;top:calc(max(14px,env(safe-area-inset-top,0px)) + 8px);width:44px;height:44px;z-index:7;font-size:1.8rem;color:#fff;display:grid;place-items:center}
+.sprev,.snext{position:absolute;top:80px;bottom:0;z-index:4}.sprev{left:0;width:35%}.snext{right:0;width:65%}
+@media (prefers-reduced-motion:reduce){.sl{animation:none}}.tbtn{margin-left:12px;font-weight:700;text-decoration:underline;color:inherit}
+.banner{background:var(--card);border-radius:16px;padding:12px 14px;margin:0 0 12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.banner b{display:block;font-size:0.882rem}.banner span{font-size:0.765rem;color:var(--fg2)}
+.bbtns{display:flex;gap:8px}
 #toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:0.824rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.sheet{animation:none}#toast{transition:none}}
@@ -323,15 +357,20 @@ const I={
  plane:'<path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>',
  cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
  rows:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+ play:'<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+ pause:'<rect x="7" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.4" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/>',
  cards:'<rect x="4" y="5" width="16" height="6" rx="2"/><rect x="4" y="13" width="16" height="6" rx="2"/>',
  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6"/>',
  star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9 6.8 19.7l1-5.9L3.5 9.7l5.9-.8z"/>'
 };
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
 const hue=s=>{let h=0;for(const c of String(s||'?'))h=(h*31+c.charCodeAt(0))%360;return h};
+const fno=s=>String(s||'').replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2');
 const logoOf=f=>LOGOS[String(f.airlineCode||'').toUpperCase()]||null;
 const badge=f=>{const l=logoOf(f);return l?`<img class="al logo" src="${l}" alt="">`:`<span class="al" style="--h:${hue(f.airlineCode||f.airline)}">${esc(f.airlineCode||(f.airline||'✈').slice(0,2).toUpperCase())}</span>`};
-const toast=(m)=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2600)};
+const toast=(m,opt)=>{const t=$('#toast');t.textContent=m;t.classList.toggle('act',!!opt);
+  if(opt){const b=document.createElement('button');b.className='tbtn';b.textContent=opt.label;b.onclick=()=>{t.classList.remove('on');opt.run()};t.appendChild(b)}
+  t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),opt?(opt.ms||7000):2600)};
 
 /* ---------- reference data ---------- */
 const CITYFIX={'Tel-aviv':'Tel Aviv','Milano':'Milan','Roma':'Rome','Wien':'Vienna','Praha':'Prague','Warszawa':'Warsaw','Kobenhavn':'Copenhagen','Lisboa':'Lisbon','Sevilla':'Seville'};
@@ -359,13 +398,28 @@ const AIRCRAFT=["Airbus A220","Airbus A319","Airbus A320","Airbus A321","Airbus 
 const CLS={1:'Economy',2:'Business',3:'First',4:'Economy Plus',5:'Private'};
 const SEAT={0:'No seat',1:'Window',2:'Middle',3:'Aisle'};
 const WHY={1:'Leisure',2:'Business',3:'Crew',4:'Other'};
+const ACC={0:'Not set',1:'Priority Pass / LoungeKey',2:'Airline status',3:'Credit card',4:'Paid entry',5:'Business class ticket',6:'Other'};
+const loungeCode=f=>f.loungeName?(f.loungeAt==='to'?f.to:f.from):'';
 
 /* ---------- math / format ---------- */
 function dist(a,b){if(!a||!b||isNaN(a.lat)||isNaN(b.lat))return 0;const R=6371,t=Math.PI/180,dA=(b.lat-a.lat)*t,dO=(b.lon-a.lon)*t;
   const h=Math.sin(dA/2)**2+Math.cos(a.lat*t)*Math.cos(b.lat*t)*Math.sin(dO/2)**2;return 2*R*Math.asin(Math.sqrt(Math.min(1,h)))}
 const estMin=km=>km>0?Math.round(km/800*60+30):0;
-function fx(f){const a=apOf(f.from),b=apOf(f.to);const km=dist(a,b);const est=!(f.duration>0);return{a,b,km,min:est?estMin(km):f.duration,est}}
-const cfg={units:'km',...LS.get('fl.settings',{})};
+/* @core-tz */
+const _tzf={};
+const tzFmt=tz=>_tzf[tz]||(_tzf[tz]=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+function tzOffsetMin(tz,utcMs){const o={};tzFmt(tz).formatToParts(new Date(utcMs)).forEach(x=>o[x.type]=x.value);
+  return Math.round((Date.UTC(+o.year,+o.month-1,+o.day,(+o.hour)%24,+o.minute,+o.second)-Math.floor(utcMs/1000)*1000)/60000)}
+function localToUtc(dateStr,timeStr,tz){const [y,m,d]=dateStr.split('-').map(Number),[h,mi]=timeStr.split(':').map(Number);
+  const guess=Date.UTC(y,m-1,d,h,mi);const off=tzOffsetMin(tz,guess);let utc=guess-off*60000;const off2=tzOffsetMin(tz,utc);if(off2!==off)utc=guess-off2*60000;return utc}
+function tzDuration(f){const a=apOf(f.from),b=apOf(f.to);if(!f.depTime||!f.arrTime||!a||!b||!a.tz||!b.tz||!f.date)return 0;
+  try{const dep=localToUtc(f.date,f.depTime,a.tz);let arr=localToUtc(f.date,f.arrTime,b.tz);while(arr<=dep)arr+=864e5;const min=Math.round((arr-dep)/60000);return min>0&&min<=1440?min:0}catch(e){return 0}}
+/* @end-core-tz */
+function fx(f){const a=apOf(f.from),b=apOf(f.to);const km=dist(a,b);const has=f.duration>0;const td=has?0:tzDuration(f);
+  return{a,b,km,min:has?f.duration:td||estMin(km),est:!(has||td)}}
+const cfg={units:'km',theme:'auto',...LS.get('fl.settings',{})};
+function applyTheme(){try{const r=document.documentElement;if(!cfg.theme||cfg.theme==='auto')delete r.dataset.theme;else r.dataset.theme=cfg.theme}catch(e){}}
+applyTheme();
 const fmtNum=n=>Math.round(n).toLocaleString('en-US');
 const fmtDist=km=>cfg.units==='mi'?fmtNum(km*0.621371)+' mi':fmtNum(km)+' km';
 const distUnit=()=>cfg.units==='mi'?'mi':'km';
@@ -378,7 +432,7 @@ const hm=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.round(m%60)
 /* ---------- state + storage ---------- */
 let flights=LS.get('fl.flights',[]);
 const canSave=LS.set('fl.probe',1);
-const S={tab:LS.get('fl.tab','flights'),q:'',sy:'all',by:'flights',view:LS.get('fl.view','compact'),sort:'date',dir:'desc'};
+const S={tab:LS.get('fl.tab','flights'),q:'',sy:'all',by:'flights',acf:'type',view:LS.get('fl.view','compact'),sort:'date',dir:'desc'};
 function persist(){if(!LS.set('fl.flights',flights))toast('Could not save: browser storage is full or blocked')}
 function persistCfg(){LS.set('fl.settings',cfg)}
 const sortF=(a,b)=>(b.date+(b.depTime||'')).localeCompare(a.date+(a.depTime||''));
@@ -405,49 +459,83 @@ function parseCSV(t){t=t.replace(/^﻿/,'');const rows=[];let row=[],f='',q=fals
 function parseAp(s){s=(s||'').trim();if(!s)return null;let m=s.match(/\(([A-Za-z0-9]{3})\/([A-Za-z0-9]{3,4})\)\s*$/);
   if(m)return(apOf(m[1])||apOf(m[2]))?(apOf(m[1])||apOf(m[2])).iata:m[1].toUpperCase();
   if(/^[A-Za-z]{3}$/.test(s))return s.toUpperCase();
-  if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;return null}
+  if(/^[A-Za-z0-9]{4}$/.test(s)&&apOf(s))return apOf(s).iata;
+  const t3=s.toUpperCase().match(/\b([A-Z]{3})\b/);if(t3&&apOf(t3[1]))return t3[1];return null}
 const t2m=s=>{const m=String(s||'').match(/^(\d+):(\d\d)/);return m?(+m[1])*60+(+m[2]):0};
+/* @core-csv */
+const normDate=s=>{s=(s||'').trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
+  m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/);if(m){const a=+m[1],b=+m[2];let d,mo;if(a>12){d=a;mo=b}else if(b>12){d=b;mo=a}else{d=a;mo=b}
+    return `${m[3]}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`}return ''};
+const timeOf=s=>{const m=String(s||'').match(/(?:^|[T\s])(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,'0')+':'+m[2]:''};
+const mapClass=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v||1;if(/premium|plus|\+/.test(v))return 4;if(/business|biz|club/.test(v))return 2;if(/first/.test(v))return 3;if(/private|charter/.test(v))return 5;return 1};
+const mapSeatType=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v;return /window/.test(v)?1:/middle/.test(v)?2:/aisle/.test(v)?3:0};
+const mapWhy=s=>{const v=String(s||'').trim().toLowerCase();if(/^\d+$/.test(v))return +v||1;return /business/.test(v)?2:/crew/.test(v)?3:/other/.test(v)?4:1};
+const mapAccess=s=>{const v=String(s||'').trim().toLowerCase();if(!v)return 0;if(/^\d+$/.test(v))return Math.min(6,+v);
+  return /priority|loungekey|\bpp\b/.test(v)?1:/status|elite|oneworld|star alliance|skyteam|gold|silver|platinum/.test(v)?2:/card|amex|visa|mastercard/.test(v)?3:/paid|pay|day pass|purchase/.test(v)?4:/business|first|ticket/.test(v)?5:6};
 function csvToFlights(text){
   const rows=parseCSV(text);if(rows.length<2)return{list:[],bad:0};
-  const hd=rows[0].map(h=>h.trim().toLowerCase());const col=n=>hd.indexOf(n);
+  const hd=rows[0].map(h=>h.trim().toLowerCase());
+  const idx=(...ns)=>{for(const n of ns){const i=hd.indexOf(n);if(i>=0)return i}return -1};
+  const C={date:idx('date','flight date','departure date'),fno:idx('flight number','flight','flight no','flight no.','flight #','flightnumber'),
+    from:idx('from','origin','departure airport','dep airport','departure'),to:idx('to','destination','arrival airport','arr airport','arrival'),
+    dep:idx('dep time','departure time','take off (actual)','takeoff (actual)','gate departure (actual)','take off (scheduled)','takeoff (scheduled)','gate departure (scheduled)'),
+    arr:idx('arr time','arrival time','landing (actual)','gate arrival (actual)','landing (scheduled)','gate arrival (scheduled)'),
+    dur:idx('duration','flight time'),air:idx('airline','airline name','carrier'),ac:idx('aircraft','aircraft type name','aircraft type','plane'),
+    reg:idx('registration','tail number','tail','tail #','tail no'),seat:idx('seat number','seat'),seatType:idx('seat type'),cls:idx('flight class','cabin class','class','cabin'),
+    why:idx('flight reason','reason'),note:idx('note','notes','comment'),rating:idx('rating'),trip:idx('trip'),lounge:idx('lounge','lounge name'),lacc:idx('lounge access','lounge access method'),lat:idx('lounge at')};
   const out=[];let bad=0;
   for(const r of rows.slice(1)){
-    const g=n=>{const i=col(n);return i<0?'':(r[i]||'').trim()};
-    const date=g('date').slice(0,10),from=parseAp(g('from')),to=parseAp(g('to'));
-    if(!/^\d{4}-\d\d-\d\d$/.test(date)||!from||!to){bad++;continue}
-    const dep=g('dep time'),arr=g('arr time');const noTimes=dep.startsWith('00:00')&&arr.startsWith('00:00');
-    let al=g('airline'),aname='',aiata='',aicao='';const am=al.match(/^(.*?)\s*\(([^/)]*)\/([^)]*)\)\s*$/);
-    if(am){aname=am[1].trim();aiata=am[2].trim();aicao=am[3].trim()}else aname=al;
-    let ac=g('aircraft').replace(/^\(\s*\)$/,''),acn=ac,acc='';const cm=ac.match(/^(.*?)\s*\(([A-Za-z0-9]+)\)\s*$/);if(cm){acn=cm[1].trim();acc=cm[2]}
-    const seat=g('seat number');let reg=g('registration');if(reg&&(reg===seat||/^\d{1,2}[A-K]$/i.test(reg)))reg='';
-    const num=n=>{const v=parseInt(g(n),10);return isNaN(v)?0:v};
-    const rating=Math.max(0,Math.min(5,parseInt(g('rating'),10)||0));
-    out.push({id:uid(),date,flightNo:g('flight number'),from,to,depTime:noTimes?'':dep.slice(0,5),arrTime:noTimes?'':arr.slice(0,5),
-      duration:t2m(g('duration')),airline:aname,airlineCode:aiata,airlineIcao:aicao,aircraft:acn,aircraftCode:acc,reg,seat,
-      seatType:num('seat type'),cls:num('flight class')||1,why:num('flight reason')||1,note:g('note'),rating,photos:[]});
+    const get=k=>C[k]<0?'':String(r[C[k]]||'').trim();
+    const date=normDate(get('date')),from=parseAp(get('from')),to=parseAp(get('to'));
+    if(!date||!from||!to){bad++;continue}
+    let dep=timeOf(get('dep')),arr=timeOf(get('arr'));if(dep==='00:00'&&arr==='00:00'){dep='';arr=''}
+    let al=get('air'),aname='',aiata='',aicao='';const am=al.match(/^(.*?)\s*\(([^/)]*)\/([^)]*)\)\s*$/);
+    if(am){aname=am[1].trim();aiata=am[2].trim();aicao=am[3].trim()}
+    else if(/^[A-Z0-9]{2}$/.test(al)){aiata=al;const k=AIRLINES.find(a=>a[1]===al);aname=k?k[0]:al;aicao=k?k[2]:''}
+    else{aname=al;const k=AIRLINES.find(a=>a[0].toLowerCase()===al.toLowerCase());if(k){aiata=k[1];aicao=k[2]}}
+    let ac=get('ac').replace(/^\(\s*\)$/,''),acn=ac,acc='';const cm=ac.match(/^(.*?)\s*\(([A-Za-z0-9]+)\)\s*$/);if(cm){acn=cm[1].trim();acc=cm[2]}
+    const seat=get('seat');let reg=get('reg');if(reg&&(reg===seat||/^\d{1,2}[A-K]$/i.test(reg)))reg='';
+    const rating=Math.max(0,Math.min(5,parseInt(get('rating'),10)||0));
+    out.push({id:uid(),date,flightNo:get('fno'),from,to,depTime:dep,arrTime:arr,duration:t2m(get('dur')),airline:aname,airlineCode:aiata,airlineIcao:aicao,
+      aircraft:acn,aircraftCode:acc,reg,seat,seatType:mapSeatType(get('seatType')),cls:mapClass(get('cls')),why:mapWhy(get('why')),note:get('note'),rating,trip:get('trip'),loungeName:get('lounge'),loungeAccess:get('lounge')?mapAccess(get('lacc')):0,loungeAt:/arr|^to$/i.test(get('lat'))?'to':'from',photos:[]});
   }
   return{list:out,bad}}
+/* @end-core-csv */
 const q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
 function flightsToCSV(){
-  const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating'];
+  const head=['Date','Flight number','From','To','Dep time','Arr time','Duration','Airline','Aircraft','Registration','Seat number','Seat type','Flight class','Flight reason','Note','Rating','Trip','Lounge','Lounge access','Lounge at'];
   const lab=c=>{const a=apShow(c);return a.name?`${a.city} / ${a.name} (${a.iata}/${a.icao})`:a.iata};
   const t=m=>m?hm(m)+':00':'';
   const rows=[...flights].sort((a,b)=>a.date.localeCompare(b.date)).map(f=>{const x=fx(f);
     return[f.date,f.flightNo,lab(f.from),lab(f.to),f.depTime?f.depTime+':00':'00:00:00',f.arrTime?f.arrTime+':00':'00:00:00',t(x.min),
-      f.airline?`${f.airline} (${f.airlineCode||''}/${f.airlineIcao||''})`:' (/)',f.aircraft?`${f.aircraft} (${f.aircraftCode||''})`:'',f.reg,f.seat,f.seatType,f.cls,f.why,f.note,f.rating||''].map(q2).join(',')});
+      f.airline?`${f.airline} (${f.airlineCode||''}/${f.airlineIcao||''})`:' (/)',f.aircraft?`${f.aircraft} (${f.aircraftCode||''})`:'',f.reg,f.seat,f.seatType,f.cls,f.why,f.note,f.rating||'',f.trip||'',f.loungeName||'',f.loungeName?(ACC[f.loungeAccess]||''):'',f.loungeName?(f.loungeAt==='to'?'Arrival':'Departure'):''].map(q2).join(',')});
   return head.map(q2).join(',')+'\n'+rows.join('\n')+'\n'}
 async function saveFile(name,data){
+  let blocked=false;
   try{const d=window.claude&&await window.claude.use('downloads');
-    if(d){await d.save({filename:name,data});toast('Saved '+name);return}}catch(e){if(e&&e.code==='declined')return}
-  const mime=/\.json$/.test(name)?'application/json':/\.csv$/.test(name)?'text/csv':/\.png$/.test(name)?'image/png':'text/plain';
+    if(d){await d.save({filename:name,data});toast('Saved '+name);return true}}catch(e){if(e&&e.code==='declined')return false;blocked=!!(window.claude&&e&&e.code)}
+  const mime=/\.json$/.test(name)?'application/json':/\.csv$/.test(name)?'text/csv':/\.png$/.test(name)?'image/png':/\.ics$/.test(name)?'text/calendar':'text/plain';
   const blob=data instanceof Blob?data:new Blob([data],{type:mime});
-  try{const file=new File([blob],name,{type:blob.type||mime});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return}}catch(e){if(e&&e.name==='AbortError')return}
-  try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved '+name);return}catch(e){}
-  try{await navigator.clipboard.writeText(typeof data==='string'?data:'');toast('Copied to clipboard instead')}catch(e){toast('Could not save the file here')}}
+  if(!blocked){try{const file=new File([blob],name,{type:blob.type||mime});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return true}}catch(e){if(e&&e.name==='AbortError')return false}}
+  if(!blocked){try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved '+name);return true}catch(e){}}
+  try{await navigator.clipboard.writeText(typeof data==='string'?data:'');toast('Copied to clipboard instead');return true}catch(e){toast('Could not save the file here');return false}}
+const icsEsc=s=>String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+const icsUtc=ms=>new Date(ms).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+const icsNext=d=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+1);return x.toISOString().slice(0,10).replace(/-/g,'')};
+function flightsToICS(list){
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//uFlightly//EN','CALSCALE:GREGORIAN'];
+  list.forEach(f=>{const a=apShow(f.from),b=apShow(f.to),x=fx(f),A=apOf(f.from);
+    L.push('BEGIN:VEVENT','UID:'+f.id+'@uflightly','DTSTAMP:'+icsUtc(Date.now()));
+    if(f.depTime&&A&&A.tz){const s=localToUtc(f.date,f.depTime,A.tz);L.push('DTSTART:'+icsUtc(s),'DTEND:'+icsUtc(s+Math.max(30,x.min||120)*60000))}
+    else L.push('DTSTART;VALUE=DATE:'+f.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+icsNext(f.date));
+    L.push('SUMMARY:'+icsEsc(`Flight ${fno(f.flightNo)} ${a.iata} to ${b.iata}`.replace(/\s+/g,' ').trim()),'LOCATION:'+icsEsc(a.name?`${a.name} (${a.iata})`:a.iata),
+      'DESCRIPTION:'+icsEsc([f.airline,f.aircraft,f.seat&&'Seat '+f.seat,CLS[f.cls]].filter(Boolean).join(' - ')),'END:VEVENT')});
+  L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n'}
 async function exportJSON(){
   const photos={};for(const f of flights)for(const id of f.photos||[]){const d=await PH.get(id);if(d)photos[id]=d}
-  await saveFile(`uflightly-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'uflightly',version:1,flights,photos,airports:customAp}))}
+  const ok=await saveFile(`uflightly-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'uflightly',version:1,flights,photos,airports:customAp}));
+  if(ok){cfg.lastBackup=Date.now();persistCfg();render(true)}}
 function merge(list,photos){
   const have=new Set(flights.map(keyOf));let add=0,dup=0;
   for(const f of list){if(have.has(keyOf(f))){dup++;continue}have.add(keyOf(f));f.photos=(f.photos||[]).filter(id=>photos&&photos[id]);flights.push(f);add++}
@@ -479,7 +567,7 @@ function render(keep){
   hydrate(m);if(S.tab==='map')mapSetup()}
 
 /* ---------- flights tab ---------- */
-function hay(f){const a=apShow(f.from),b=apShow(f.to);return norm([f.date,f.date.slice(0,4),f.flightNo,a.iata,a.icao,a.city,a.name,a.country,b.iata,b.icao,b.city,b.name,b.country,f.airline,f.airlineCode,f.aircraft,f.aircraftCode,f.reg,f.note,CLS[f.cls]].join(' '))}
+function hay(f){const a=apShow(f.from),b=apShow(f.to);return norm([f.date,f.date.slice(0,4),f.flightNo,a.iata,a.icao,a.city,a.name,a.country,b.iata,b.icao,b.city,b.name,b.country,f.airline,f.airlineCode,f.aircraft,f.aircraftCode,f.reg,f.note,f.trip,CLS[f.cls],f.loungeName?'lounge '+f.loungeName:''].join(' '))}
 function card(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
   return `<button class="fcard" data-act="open" data-id="${f.id}">
    <div class="fc-top">${badge(f)}
@@ -487,11 +575,10 @@ function card(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
    <div class="fc-route"><div class="code">${esc(a.iata)}<small>${esc(a.city)}</small></div>
     <div class="path"><span>${ic('plane')}${fmtDur(x.min,x.est)}</span></div>
     <div class="code r">${esc(b.iata)}<small>${esc(b.city)}</small></div></div>
-   <div class="fc-foot">${isFut(f)?`<span class="chip" style="color:var(--warm-ink)">${inDays(f.date)}</span>`:''}${x.km?`<span class="chip">${fmtDist(x.km)}</span>`:''}<span class="chip">${CLS[f.cls]||'Economy'}</span>${f.seat?`<span class="chip">Seat ${esc(f.seat)}</span>`:''}${f.rating?`<span class="chip star">${'★'.repeat(f.rating)}</span>`:''}${(f.photos||[]).length?`<span class="chip">${f.photos.length} photo${f.photos.length>1?'s':''}</span>`:''}</div></button>`}
-const fno=s=>String(s||'').replace(/^([A-Z0-9]{2})(\d+)$/,'$1 $2');
+   <div class="fc-foot">${isFut(f)?`<span class="chip" style="color:var(--warm-ink)">${inDays(f.date)}</span>`:''}${x.km?`<span class="chip">${fmtDist(x.km)}</span>`:''}<span class="chip">${CLS[f.cls]||'Economy'}</span>${f.loungeName?'<span class="chip">Lounge</span>':''}${f.seat?`<span class="chip">Seat ${esc(f.seat)}</span>`:''}${f.rating?`<span class="chip star">${'★'.repeat(f.rating)}</span>`:''}${(f.photos||[]).length?`<span class="chip">${f.photos.length} photo${f.photos.length>1?'s':''}</span>`:''}</div></button>`}
 const CLSHORT={1:'',2:'Business',3:'First',4:'E+',5:'Private'};
 function crow(f){const x=fx(f),a=apShow(f.from),b=apShow(f.to);
-  const ch=[isFut(f)?'!'+inDays(f.date):'',x.min?fmtDur(x.min,x.est):'',f.aircraftCode,f.reg,CLSHORT[f.cls],[f.seat,f.seatType?SEAT[f.seatType]:''].filter(Boolean).join(' · '),f.rating?'★'.repeat(f.rating):''].filter(Boolean);
+  const ch=[isFut(f)?'!'+inDays(f.date):'',x.min?fmtDur(x.min,x.est):'',f.aircraftCode,f.reg,CLSHORT[f.cls],f.loungeName?'Lounge':'',[f.seat,f.seatType?SEAT[f.seatType]:''].filter(Boolean).join(' · '),f.rating?'★'.repeat(f.rating):''].filter(Boolean);
   return `<div class="srow"><div class="swa"><button data-act="edit" data-id="${f.id}">Edit</button><button class="d" data-act="del" data-id="${f.id}">Delete</button></div><button class="crow" data-act="open" data-id="${f.id}"><span class="clg">${badge(f)}</span><span class="cbody">
    <span class="c1"><span>${esc(fno(f.flightNo)||f.airline||'Flight')}<em>${esc(a.iata)} → ${esc(b.iata)}</em></span><span>${fmtDate(f.date)}</span></span>
    <span class="c2">${esc(a.city)} to ${esc(b.city)}</span>
@@ -516,14 +603,26 @@ function listHtml(){
     const upH=up.length?sec('Upcoming',`${up.length} flight${up.length>1?'s':''}`,up):'';
     const yH=yrs.map(y=>sec(y,sub(by[y]),desc?by[y]:[...by[y]].reverse())).join('');
     return desc?upH+yH:yH+upH}
-  const kf={from:f=>{const a=apShow(f.from);return a.city+' · '+a.iata},to:f=>{const a=apShow(f.to);return a.city+' · '+a.iata},airline:f=>f.airline||'No airline',aircraft:f=>f.aircraft||'Unknown aircraft'}[S.sort];
+  const AN2=airNames(flights);
+  const kf={from:f=>{const a=apShow(f.from);return a.city+' · '+a.iata},to:f=>{const a=apShow(f.to);return a.city+' · '+a.iata},airline:f=>f.airline?(AN2.get(airKey(f))||f.airline):'No airline',aircraft:f=>f.aircraft||'Unknown aircraft',trip:f=>f.trip||'No trip'}[S.sort];
   const g={};list.forEach(f=>(g[kf(f)]=g[kf(f)]||[]).push(f));
-  const ks=Object.keys(g).sort((a,b)=>a.localeCompare(b));if(S.dir==='desc')ks.reverse();
+  let ks=Object.keys(g);
+  if(S.sort==='trip'){const lt=k=>g[k].reduce((m,f)=>f.date>m?f.date:m,'');ks.sort((a,b)=>lt(b).localeCompare(lt(a)));if(S.dir==='asc')ks.reverse()}
+  else{ks.sort((a,b)=>a.localeCompare(b));if(S.dir==='desc')ks.reverse()}
+  if(S.sort==='trip'&&ks.includes('No trip'))ks=ks.filter(k=>k!=='No trip').concat('No trip');
   return ks.map(k=>sec(k,sub(g[k]),g[k])).join('')}
+function backupBanner(){
+  if(!flights.length)return '';const now=Date.now(),last=cfg.lastBackup||0;
+  if(now<(cfg.backupSnooze||0))return '';
+  const days=last?Math.floor((now-last)/864e5):null;
+  if(last&&days<30)return '';
+  const msg=last?`Your last backup was ${days} days ago.`:'Your flights live only on this device.';
+  return `<div class="banner"><div><b>${msg}</b><span>Export a backup so you can restore them if Safari data is cleared.</span></div><div class="bbtns"><button class="btn sm primary" data-act="export-json">Back up</button><button class="btn sm" data-act="snooze">Later</button></div></div>`}
 function vFlights(){
   return `<div class="scroll" id="sc"><div class="wrap"><header class="large"><div class="hrow"><h1>Flights</h1><div style="display:flex;align-items:center;gap:10px">${flights.length?`<div class="seg" data-seg="view" style="margin:0;flex-wrap:nowrap"><button data-v="compact" aria-pressed="${S.view==='compact'}" aria-label="Compact list">${ic('rows')}</button><button data-v="cards" aria-pressed="${S.view==='cards'}" aria-label="Large cards">${ic('cards')}</button></div>`:''}<button class="icon-btn" data-act="add" aria-label="Add a flight">${ic('plus')}</button></div></div>
    ${flights.length?`<label class="search">${ic('search')}<input id="q" type="search" placeholder="Airport, airline, aircraft, year" value="${esc(S.q)}" autocomplete="off" autocapitalize="off"></label>
-   <div class="chips">${[['date','Date'],['from','From'],['to','To'],['airline','Airline'],['aircraft','Aircraft']].map(([k,l])=>`<button data-sort="${k}" aria-pressed="${S.sort===k}">${l}${S.sort===k?(S.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}</div>`:''}</header>
+   <div class="chips">${[['date','Date'],['from','From'],['to','To'],['airline','Airline'],['aircraft','Aircraft'],['trip','Trip']].map(([k,l])=>`<button data-sort="${k}" aria-pressed="${S.sort===k}">${l}${S.sort===k?(S.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}</div>`:''}</header>
+   ${backupBanner()}
    <div id="list">${listHtml()}</div></div></div>`}
 
 /* ---------- sheets ---------- */
@@ -541,9 +640,15 @@ function enableSwipe(el){
   el.addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;if(dy>8){el.style.transition='none';el.style.transform=`translateY(${dy}px)`}else if(dy<-4){y0=null;el.style.transform=''}},{passive:true});
   el.addEventListener('touchend',()=>{if(y0==null)return;const d=dy;y0=null;el.style.transition='transform .2s ease';
     if(d>120){if(el.dataset.kind==='form'&&formDirty()){el.style.transform='';requestCloseForm()}else{el.style.transform='translateY(100%)';setTimeout(()=>el.remove(),190)}}else el.style.transform=''},{passive:true})}
-function confirmDelete(id){actionSheet({title:'Delete this flight?',message:'It will be removed from your log, along with its photos.',actions:[{label:'Delete flight',destructive:true,run:()=>{const f=flights.find(x=>x.id===id);if(!f)return;(f.photos||[]).forEach(p=>PH.del(p));flights=flights.filter(x=>x.id!==id);persist();$('#layers').innerHTML='';render(true);toast('Flight deleted')}}]})}
-function confirmWipe(){actionSheet({title:'Delete all flights?',message:'This removes every flight and photo from this device. Export a backup first if you might need them.',actions:[{label:'Delete all flights',destructive:true,run:()=>{flights.forEach(f=>(f.photos||[]).forEach(p=>PH.del(p)));flights=[];persist();render();toast('All flights deleted')}}]})}
-const formVals=()=>{const g=id=>($('#'+id)||{}).value||'';return JSON.stringify([g('f-date'),g('f-airline'),g('f-code'),g('f-no'),g('f-ac'),g('f-code2'),g('f-reg'),g('f-seat'),g('f-dep'),g('f-arr'),g('f-h'),g('f-m'),g('f-note'),D&&D.from,D&&D.to,D&&D.seatType,D&&D.cls,D&&D.why,D&&D.rating,D&&D.photos.join(',')])};
+const UNDO={t:null,pending:null};
+function finishUndo(){if(UNDO.t){clearTimeout(UNDO.t);UNDO.t=null}if(UNDO.pending){UNDO.pending.forEach(f=>(f.photos||[]).forEach(p=>PH.del(p)));UNDO.pending=null}}
+window.addEventListener('pagehide',finishUndo);
+function removeFlights(list,msg){finishUndo();const ids=new Set(list.map(f=>f.id));flights=flights.filter(f=>!ids.has(f.id));persist();$('#layers').innerHTML='';render(true);
+  UNDO.pending=list;UNDO.t=setTimeout(finishUndo,9000);
+  toast(msg,{label:'Undo',ms:8000,run:()=>{const back=UNDO.pending||[];UNDO.pending=null;clearTimeout(UNDO.t);UNDO.t=null;flights.push(...back);persist();render(true);toast(back.length>1?'Flights restored':'Flight restored')}})}
+function confirmDelete(id){actionSheet({title:'Delete this flight?',message:'It will be removed from your log, along with its photos.',actions:[{label:'Delete flight',destructive:true,run:()=>{const f=flights.find(x=>x.id===id);if(f)removeFlights([f],'Flight deleted')}}]})}
+function confirmWipe(){actionSheet({title:'Delete all flights?',message:'This removes every flight and photo from this device. Export a backup first if you might need them.',actions:[{label:'Delete all flights',destructive:true,run:()=>removeFlights([...flights],'All flights deleted')}]})}
+const formVals=()=>{const g=id=>($('#'+id)||{}).value||'';return JSON.stringify([g('f-date'),g('f-airline'),g('f-code'),g('f-no'),g('f-ac'),g('f-code2'),g('f-reg'),g('f-seat'),g('f-dep'),g('f-arr'),g('f-h'),g('f-m'),g('f-note'),g('f-trip'),($('#f-lon')||{}).checked,g('f-lname'),g('f-lacc'),g('f-lat'),D&&D.from,D&&D.to,D&&D.seatType,D&&D.cls,D&&D.why,D&&D.rating,D&&D.photos.join(',')])};
 const formDirty=()=>!!(D&&D._snap&&formVals()!==D._snap);
 function requestCloseForm(){if(formDirty())actionSheet({title:'Discard changes?',message:'Your edits to this flight have not been saved.',actions:[{label:'Discard changes',destructive:true,run:()=>closeSheet()}],cancel:'Keep editing'});else closeSheet()}
 
@@ -558,9 +663,11 @@ function detail(id){
     <div class="perf"></div>
     <div class="pgrid"><div><small>Distance</small><b>${x.km?fmtDist(x.km):'—'}</b></div><div><small>Class</small><b>${CLS[f.cls]||'Economy'}</b></div><div><small>Seat</small><b>${esc(f.seat||'—')}</b></div></div></div>
    ${f.rating?`<div class="card" style="text-align:center;font-size:1.529rem;color:var(--warm-ink);letter-spacing:4px;padding:8px">${'★'.repeat(f.rating)}<span style="color:var(--fill)">${'★'.repeat(5-f.rating)}</span></div>`:''}
-   <div class="grp">${row('Aircraft',[f.aircraft,f.aircraftCode&&'('+f.aircraftCode+')'].filter(Boolean).join(' '))}${row('Registration',f.reg)}${row('Seat type',f.seat||f.seatType?SEAT[f.seatType]:'')}${row('Reason',WHY[f.why])}${row('From',[a.name,a.country].filter(Boolean).join(', '))}${row('To',[b.name,b.country].filter(Boolean).join(', '))}</div>
+   <div class="grp">${row('Trip',f.trip)}${row('Lounge',f.loungeName?`${f.loungeName} (${loungeCode(f)})${f.loungeAccess?' · '+ACC[f.loungeAccess]:''}`:'')}${row('Aircraft',[f.aircraft,f.aircraftCode&&'('+f.aircraftCode+')'].filter(Boolean).join(' '))}${row('Registration',f.reg)}${row('Seat type',f.seat||f.seatType?SEAT[f.seatType]:'')}${row('Reason',WHY[f.why])}${row('From',[a.name,a.country].filter(Boolean).join(', '))}${row('To',[b.name,b.country].filter(Boolean).join(', '))}</div>
    ${f.note?`<div class="gt">Notes</div><div class="grp"><div class="row" style="white-space:pre-wrap;display:block;padding:12px 16px">${esc(f.note)}</div></div>`:''}
    ${(f.photos||[]).length?`<div class="gt">Photos</div><div class="photos">${f.photos.map(p=>`<button data-act="photo" data-pid="${p}" aria-label="Open photo"><img data-pid="${p}" alt=""></button>`).join('')}</div>`:''}
+   <button class="btn" data-act="return" data-id="${f.id}" style="margin:8px auto">Add return flight</button>
+   ${isFut(f)?`<button class="btn" data-act="ics" data-id="${f.id}" style="margin:8px auto">Add to Calendar</button>`:''}
    <button class="btn danger" id="delbtn" data-act="del" data-id="${f.id}" style="margin:8px auto">Delete flight</button>
    </div></div>`);
   el.dataset.kind='detail'}
@@ -582,10 +689,11 @@ function pickAirport(cur,cb){
 
 /* add / edit form */
 let D=null;
-function form(id){
+function form(id,pre){
   const f=id?flights.find(x=>x.id===id):null;
   D=f?JSON.parse(JSON.stringify(f)):{id:uid(),date:new Date().toISOString().slice(0,10),flightNo:'',from:'',to:'',depTime:'',arrTime:'',duration:0,airline:'',airlineCode:'',airlineIcao:'',aircraft:'',aircraftCode:'',reg:'',seat:'',seatType:0,cls:1,why:1,note:'',rating:0,photos:[]};
   D._new=!f;D._added={};D._removed=[];
+  if(!f&&pre)Object.assign(D,pre);
   const sel=(k,l,map)=>`<div class="row"><label for="f-${k}">${l}</label><select id="f-${k}" data-k="${k}">${Object.entries(map).map(([v,n])=>`<option value="${v}"${+v===+D[k]?' selected':''}>${n}</option>`).join('')}</select></div>`;
   const hrs=Math.floor((D.duration||0)/60),mins=(D.duration||0)%60;
   const uAl=[...new Set([...flights.map(x=>x.airline),...AIRLINES.map(a=>a[0])].filter(Boolean))],uAc=[...new Set([...flights.map(x=>x.aircraft),...AIRCRAFT].filter(Boolean))];
@@ -593,7 +701,8 @@ function form(id){
    <div class="sbody"><div class="wrap">
    <div class="grp"><div class="row"><label for="f-date">Date</label><input type="date" id="f-date" value="${D.date}"></div>
     <button class="row link" data-act="pick" data-end="from"><span>From</span><span class="val" id="v-from"></span></button>
-    <button class="row link" data-act="pick" data-end="to"><span>To</span><span class="val" id="v-to"></span></button></div>
+    <button class="row link" data-act="pick" data-end="to"><span>To</span><span class="val" id="v-to"></span></button>
+    <div class="row"><label for="f-trip">Trip</label><input id="f-trip" list="dl-trip" placeholder="Optional, e.g. New York 2025" value="${esc(D.trip||'')}" autocomplete="off"></div></div>
    <div class="gt">Airline</div><div class="grp">
     <div class="row"><label for="f-airline">Airline</label><input id="f-airline" list="dl-al" placeholder="Delta Air Lines" value="${esc(D.airline)}" autocomplete="off"></div>
     <div class="row"><label for="f-code">Code</label><input id="f-code" placeholder="DL" maxlength="3" autocapitalize="characters" value="${esc(D.airlineCode)}"></div>
@@ -607,6 +716,13 @@ function form(id){
     ${sel('seatType','Position',SEAT)}
     ${sel('cls','Class',CLS)}
     ${sel('why','Reason',WHY)}</div>
+   <div class="gt">Lounge</div><div class="grp">
+    <div class="row"><label for="f-lon">Lounge visit</label><input type="checkbox" id="f-lon" class="sw"${D.loungeName?' checked':''}></div>
+    <div id="lounge-fields"${D.loungeName?'':' hidden'}>
+     <div class="row"><label for="f-lname">Lounge</label><input id="f-lname" list="dl-lounge" placeholder="Name of the lounge" value="${esc(D.loungeName||'')}" autocomplete="off"></div>
+     <div class="row"><label for="f-lacc">Access</label><select id="f-lacc">${Object.entries(ACC).map(([v,n])=>`<option value="${v}"${+v===+(D.loungeAccess||0)?' selected':''}>${n}</option>`).join('')}</select></div>
+     <div class="row"><label for="f-lat">Where</label><select id="f-lat"><option value="from"${D.loungeAt!=='to'?' selected':''}>Departure airport</option><option value="to"${D.loungeAt==='to'?' selected':''}>Arrival airport</option></select></div>
+    </div></div>
    <div class="gt">Times</div><div class="grp">
     <div class="row"><label for="f-dep">Departure</label><input type="time" id="f-dep" value="${esc(D.depTime)}"></div>
     <div class="row"><label for="f-arr">Arrival</label><input type="time" id="f-arr" value="${esc(D.arrTime)}"></div>
@@ -615,12 +731,15 @@ function form(id){
    <div class="gt">Rating</div><div class="grp"><div class="row"><span>Flight</span><div class="stars" id="stars"></div></div></div>
    <div class="gt">Notes</div><div class="grp"><div class="row area"><textarea id="f-note" placeholder="How was it?">${esc(D.note)}</textarea></div></div>
    <div class="gt">Photos</div><div class="photos" id="phgrid"></div>
-   <datalist id="dl-al">${uAl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-ac">${uAc.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+   <datalist id="dl-lounge"></datalist><datalist id="dl-trip">${[...new Set(flights.map(x=>x.trip).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-al">${uAl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist><datalist id="dl-ac">${uAc.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
    </div></div>`);
   fel.dataset.kind='form';fillEnds();drawStars();drawPhotos();estHint();D._snap=formVals()}
-function fillEnds(){['from','to'].forEach(k=>{const el=$('#v-'+k);if(!el)return;const a=D[k]?apShow(D[k]):null;el.textContent=a?`${a.iata} · ${a.city}`:'Select'})}
+function fillEnds(){['from','to'].forEach(k=>{const el=$('#v-'+k);if(!el)return;const a=D[k]?apShow(D[k]):null;el.textContent=a?`${a.iata} · ${a.city}`:'Select'});loungeSuggest()}
+function loungeSuggest(){const dl=$('#dl-lounge');if(!dl||!D)return;const code=(($('#f-lat')||{}).value==='to')?D.to:D.from;
+  const names=[...new Set(flights.filter(f=>f.loungeName&&loungeCode(f)===code).map(f=>f.loungeName))];dl.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('')}
 function estHint(){const h=$('#esthint');if(!h)return;const km=dist(apOf(D.from),apOf(D.to));const m=(+$('#f-h').value||0)*60+(+$('#f-m').value||0);
-  h.textContent=km?`${fmtDist(km)} · ${m?'':`Leave duration empty to use an estimate of ${fmtDur(estMin(km))}.`}`:'Choose both airports to see distance.'}
+  const td=tzDuration({date:($('#f-date')||{}).value||D.date,from:D.from,to:D.to,depTime:($('#f-dep')||{}).value,arrTime:($('#f-arr')||{}).value});
+  h.textContent=km?`${fmtDist(km)} · ${m?'':td?`Duration from your times: ${fmtDur(td)}.`:`Leave duration empty to use an estimate of ${fmtDur(estMin(km))}.`}`:'Choose both airports to see distance.'}
 function drawStars(){const s=$('#stars');if(s)s.innerHTML=[1,2,3,4,5].map(n=>`<button type="button" data-star="${n}" class="${n<=D.rating?'on':''}" aria-label="${n} star${n>1?'s':''}">★</button>`).join('')}
 function drawPhotos(){const g=$('#phgrid');if(!g)return;
   g.innerHTML=D.photos.map(p=>`<div class="ph"><img data-pid="${p}" alt=""><button type="button" class="x" data-rm="${p}" aria-label="Remove photo">×</button></div>`).join('')+`<button type="button" class="add" data-act="addphoto" aria-label="Add photos">${ic('cam')}</button>`;
@@ -628,8 +747,11 @@ function drawPhotos(){const g=$('#phgrid');if(!g)return;
 function saveForm(){
   const v=id=>($('#'+id)||{}).value||'';
   D.date=v('f-date');if(!D.date||!D.from||!D.to){toast('Choose a date, origin and destination');return}
-  Object.assign(D,{airline:v('f-airline').trim(),airlineCode:v('f-code').trim().toUpperCase(),flightNo:v('f-no').trim().toUpperCase(),aircraft:v('f-ac').trim(),aircraftCode:v('f-code2').trim().toUpperCase(),reg:v('f-reg').trim().toUpperCase(),seat:v('f-seat').trim().toUpperCase(),depTime:v('f-dep'),arrTime:v('f-arr'),note:v('f-note').trim()});
+  Object.assign(D,{airline:v('f-airline').trim(),airlineCode:v('f-code').trim().toUpperCase(),flightNo:v('f-no').trim().toUpperCase(),aircraft:v('f-ac').trim(),aircraftCode:v('f-code2').trim().toUpperCase(),reg:v('f-reg').trim().toUpperCase(),seat:v('f-seat').trim().toUpperCase(),depTime:v('f-dep'),arrTime:v('f-arr'),note:v('f-note').trim(),trip:v('f-trip').trim()});
   D.duration=(+v('f-h')||0)*60+(+v('f-m')||0);
+  if(!D.duration){const td=tzDuration(D);if(td)D.duration=td}
+  if(($('#f-lon')||{}).checked){const nm=v('f-lname').trim();if(!nm){toast('Enter the lounge name');return}D.loungeName=nm;D.loungeAccess=+v('f-lacc')||0;D.loungeAt=v('f-lat')==='to'?'to':'from'}
+  else{D.loungeName='';D.loungeAccess=0;D.loungeAt='from'}
   const k=AIRLINES.find(a=>a[0].toLowerCase()===D.airline.toLowerCase());if(k){if(!D.airlineCode)D.airlineCode=k[1];D.airlineIcao=k[2]}
   Object.entries(D._added).forEach(([id,d])=>{if(D.photos.includes(id))PH.put(id,d)});D._removed.forEach(id=>PH.del(id));
   const out={...D};delete out._new;delete out._added;delete out._removed;delete out._snap;
@@ -637,6 +759,15 @@ function saveForm(){
   persist();closeSheet();render();toast(D._new?'Flight added':'Flight updated')}
 
 /* ---------- stats ---------- */
+/* @core-names */
+const airKey=f=>(f.airlineCode||'').toUpperCase()||norm(f.airline||'');
+function airNames(list){const m=new Map();list.forEach(f=>{const k=airKey(f);if(!k||!f.airline)return;const e=m.get(k)||new Map();e.set(f.airline,(e.get(f.airline)||0)+1);m.set(k,e)});
+  const out=new Map();m.forEach((e,k)=>out.set(k,[...e.entries()].sort((a,b)=>b[1]-a[1]||b[0].length-a[0].length)[0][0]));return out}
+const FAMS=[[/737|b73[0-9x]/i,'Boeing 737'],[/747|b74[0-9a-z]/i,'Boeing 747'],[/757|b75[0-9]/i,'Boeing 757'],[/767|b76[0-9]/i,'Boeing 767'],[/777|b77[0-9a-z]/i,'Boeing 777'],[/787|b78[0-9]/i,'Boeing 787'],[/727/i,'Boeing 727'],[/717/i,'Boeing 717'],
+ [/a22[01]|bcs[13]/i,'Airbus A220'],[/a3(18|19|20|21)|a32\d|a2[01]n/i,'Airbus A320 family'],[/a33\d/i,'Airbus A330'],[/a34\d/i,'Airbus A340'],[/a35\d|a35k/i,'Airbus A350'],[/a38\d/i,'Airbus A380'],[/a30\d|a31[0-7]/i,'Airbus A300/A310'],
+ [/e1[79]\d|e-?jet|embraer 1[79]/i,'Embraer E-Jet'],[/erj|embraer 14/i,'Embraer ERJ'],[/atr ?(42|72)|at[47]\d/i,'ATR 42/72'],[/crj/i,'Bombardier CRJ'],[/dash ?8|q[234]00|dhc-?8/i,'Dash 8'],[/rj1h|avro|bae ?146/i,'Avro RJ / BAe 146'],[/c172|cessna 172/i,'Cessna 172']];
+function acFamily(f){const s=(f.aircraft||'')+' '+(f.aircraftCode||'');for(const [re,l] of FAMS)if(re.test(s))return l;return f.aircraft||''}
+/* @end-core-names */
 function count(list,fn){const m=new Map();list.forEach(x=>{const k=fn(x);if(k)m.set(k,(m.get(k)||0)+1)});return[...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(b[0]))}
 function bars(items,fmt,lead,vf){if(!items.length)return '<div style="color:var(--fg2)">Nothing yet</div>';const mx=items[0][1];return items.map(([k,v])=>`<div class="bar"><span class="n">${lead?lead(k):''}<span class="nt">${esc(fmt?fmt(k):k)}</span></span><span class="v">${vf?vf(v):v}</span><span class="tr"><i style="width:${Math.max(3,v/mx*100)}%"></i></span></div>`).join('')}
 function vStats(){
@@ -652,8 +783,8 @@ function vStats(){
   const byD=S.by==='distance';
   const rank=fn=>{const m=new Map();X.forEach(x=>{[].concat(fn(x)||[]).filter(Boolean).forEach(k=>m.set(k,(m.get(k)||0)+(byD?x.km:1)))});return[...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0])))};
   const vf=v=>byD?fmtNum(distVal(v))+' '+distUnit():v;
-  const air=rank(x=>x.f.airline),acs=rank(x=>x.f.aircraft),topAp=rank(x=>[x.f.from,x.f.to]).slice(0,8);
-  const routes=rank(x=>[x.f.from,x.f.to].sort().join(' – ')).slice(0,6),routesF=count(L,f=>[f.from,f.to].sort().join(' – '));
+  const AN=airNames(L),air=rank(x=>airKey(x.f)),acs=rank(x=>S.acf==='family'?acFamily(x.f):x.f.aircraft),topAp=rank(x=>[x.f.from,x.f.to]).slice(0,8);
+  const routes=rank(x=>[x.f.from,x.f.to].sort().join(' – ')).slice(0,6),routesF=count(L,f=>[f.from,f.to].sort().join(' – ')),trips=rank(x=>x.f.trip).slice(0,6);
   const cls=count(L,f=>CLS[f.cls]),seats=count(L,f=>f.seatType?SEAT[f.seatType]:''),why=count(L,f=>WHY[f.why]);
   const ys=PF.map(f=>+f.date.slice(0,4)),y0=Math.min(...ys),y1=Math.max(...ys);const per={};PF.forEach(f=>per[f.date.slice(0,4)]=(per[f.date.slice(0,4)]||0)+1);
   const yrs=[];for(let y=y0;y<=y1;y++)yrs.push(y);const mx=Math.max(...Object.values(per));
@@ -662,6 +793,9 @@ function vStats(){
   const rt=x=>x?`${apShow(x.f.from).iata} → ${apShow(x.f.to).iata}`:'';
   const chips=`<div class="chips"><button data-sy="all" aria-pressed="${S.sy==='all'}">All time</button>${years.map(y=>`<button data-sy="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join('')}</div>`;
   const earth=km/40075,moon=km/384400*100;
+  const wy=S.sy!=='all'?S.sy:years[0];
+  let cmp='';if(S.sy!=='all'){const pv=String(+S.sy-1),PV=PF.filter(f=>f.date.startsWith(pv));if(PV.length){const pk=PV.reduce((s,f)=>s+fx(f).km,0),df=L.length-PV.length,dk=km-pk;const sg=n=>n>0?'+':n<0?'−':'±';
+    cmp=`vs ${pv}: ${sg(df)}${Math.abs(df)} flights · ${sg(dk)}${fmtNum(distVal(Math.abs(dk)))} ${distUnit()}`}}
   const longHaul=X.filter(x=>x.min>=360).length,dom=X.filter(x=>x.a&&x.b&&x.a.country&&x.a.country===x.b.country).length,intl=L.length-dom;
   const altDist=cfg.units==='mi'?fmtNum(km)+' km':fmtNum(km*0.621371)+' miles',co2=(km*0.122/1000).toFixed(1);
   const routesAll=new Set(L.map(f=>[f.from,f.to].sort().join('-'))).size,yearsFlying=Math.max(1,new Date().getFullYear()-y0),activeMonths=new Set(L.map(f=>f.date.slice(0,7))).size;
@@ -679,20 +813,24 @@ function vStats(){
     <div class="two"><div><small>FLIGHTS</small><div class="big">${L.length}</div><div class="lbl">${longHaul} long haul</div></div>
      <div><small>DISTANCE</small><div class="big">${fmtNum(distVal(km))} <span class="u">${distUnit()}</span></div><div class="lbl">${earth.toFixed(1)}× around the world</div></div></div>
     <div class="three"><div><small>FLIGHT TIME</small><b>${fmtTot(min)}</b></div><div><small>AIRPORTS</small><b>${aps.size}</b></div><div><small>AIRLINES</small><b>${air.length}</b></div></div>
-    <div class="fun">${dom} domestic · ${intl} international<br>${altDist} · ${moon.toFixed(moon<10?1:0)}% of the way to the Moon<br>About <b>${co2} t</b> of CO₂ per passenger (estimate)</div>
-    <div style="margin-top:14px"><button class="btn sm" data-act="share">Share passport</button></div></div>
+    <div class="fun">${dom} domestic · ${intl} international<br>${altDist} · ${moon.toFixed(moon<10?1:0)}% of the way to the Moon<br>About <b>${co2} t</b> of CO₂ per passenger (estimate)${cmp?`<br>${cmp}`:''}</div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="share">Share passport</button><button class="btn sm" data-act="wrapped" data-y="${wy}">${wy} in review</button></div></div>
    ${goalCard()}
-   <div class="tiles"><div class="tile"><b>${aps.size}</b><small>Airports</small></div><div class="tile"><b>${ctry.size}</b><small>Countries</small></div><div class="tile"><b>${air.length}</b><small>Airlines</small></div><div class="tile"><b>${acs.length}</b><small>Aircraft types</small></div><div class="tile"><b>${conts.length}</b><small>Continents</small></div><div class="tile"><b>${tzs.size}</b><small>Time zones</small></div><div class="tile"><b>${routesAll}</b><small>Routes</small></div><div class="tile"><b>${S.sy==='all'?yearsFlying:activeMonths}</b><small>${S.sy==='all'?'Years of flying':'Active months'}</small></div></div>
+   <div class="tiles"><div class="tile"><b>${aps.size}</b><small>Airports</small></div><div class="tile"><b>${ctry.size}</b><small>Countries</small></div><div class="tile"><b>${air.length}</b><small>Airlines</small></div><div class="tile"><b>${new Set(L.map(f=>f.aircraft).filter(Boolean)).size}</b><small>Aircraft types</small></div><div class="tile"><b>${conts.length}</b><small>Continents</small></div><div class="tile"><b>${tzs.size}</b><small>Time zones</small></div><div class="tile"><b>${routesAll}</b><small>Routes</small></div><div class="tile"><b>${S.sy==='all'?yearsFlying:activeMonths}</b><small>${S.sy==='all'?'Years of flying':'Active months'}</small></div></div>
    ${S.sy==='all'&&yrs.length>1?`<div class="card" style="margin-top:14px"><h3>Flights per year</h3><div class="cols">${yrs.map(y=>{const n=per[y]||0;return `<div class="${n?'':'z'}"><span>${n||''}</span><i style="height:${n?Math.max(4,n/mx*84):2}px"></i>${String(y).slice(2)}</div>`}).join('')}</div></div>`:'<div style="height:14px"></div>'}
+   ${cumCard(L)}
+   ${heatCard(L)}
    <div class="card"><h3>When you fly</h3><div style="font-size:0.735rem;color:var(--fg2);margin:-4px 0 4px">By month${L.length?` · busiest is ${MN[topI(mo)]}`:''}</div>${colsHtml(mo,['J','F','M','A','M','J','J','A','S','O','N','D'])}
     <div style="font-size:0.735rem;color:var(--fg2);margin:14px 0 4px">By weekday${L.length?` · most often ${DN[topI(wd)]}`:''}</div>${colsHtml(wd,['Mon','Tue','Wed','Thu','Fri','Sat','Sun'])}</div>
    <div class="seg" data-seg="rankby" style="margin:0 0 12px;display:flex"><button style="flex:1" data-v="flights" aria-pressed="${!byD}">Top by flights</button><button style="flex:1" data-v="distance" aria-pressed="${byD}">Top by distance</button></div>
-   <div class="card"><h3>Airlines</h3>${bars(air.slice(0,7),null,k=>airLead(L,k),vf)}</div>
-   <div class="card"><h3>Aircraft</h3>${bars(acs.slice(0,7),null,null,vf)}</div>
+   <div class="card"><h3>Airlines</h3>${bars(air.slice(0,7),k=>AN.get(k)||k,k=>airLead(L,k),vf)}</div>
+   <div class="card"><h3>Aircraft <span class="seg" data-seg="acf" style="margin:0;flex-wrap:nowrap"><button data-v="type" aria-pressed="${S.acf!=='family'}">Type</button><button data-v="family" aria-pressed="${S.acf==='family'}">Family</button></span></h3>${bars(acs.slice(0,7),null,null,vf)}</div>
    ${regs.length?`<div class="card"><h3>Tail numbers <small>${regs.length} logged${repeat?` · ${repeat} flown more than once`:''}</small></h3>${bars(regs.slice(0,6),r=>r+(regType(r)?' · '+regType(r):''))}</div>`:''}
    <div class="card"><h3>Airports <small>${byD?'distance':'visits'}</small></h3>${bars(topAp,c=>{const a=apShow(c);return a.iata+' · '+a.city},null,vf)}</div>
    <div class="card"><h3>Routes</h3>${bars(routes,null,null,vf)}</div>
+   ${trips.length?`<div class="card"><h3>Trips <small>${new Set(L.map(f=>f.trip).filter(Boolean)).size}</small></h3>${bars(trips,null,null,vf)}</div>`:''}
    <div class="card"><h3>Countries <small>${ctry.size}</small></h3><div class="tags">${[...ctry.entries()].sort((a,b)=>b[1].n-a[1].n).map(([c,e])=>`<span class="chip">${esc(c)} · ${e.codes.join(', ')}</span>`).join('')||'<span style="color:var(--fg2)">No data</span>'}</div></div>
+   ${bucketCard()}
    <div class="card"><h3>Continents <small>${conts.length} of 7</small></h3>${bars(conts)}</div>
    <div class="card"><h3>Averages</h3>
     <div class="rec"><span>Distance per flight</span><span>${avgKm?fmtDist(avgKm):'—'}</span></div>
@@ -705,6 +843,7 @@ function vStats(){
     <div class="rec"><span>First flight</span><span>${fmtDate(first.date)}</span></div>
     ${routesF[0]?`<div class="rec"><span>Most flown route</span><span>${esc(routesF[0][0])} · ${routesF[0][1]}×</span></div>`:''}</div>
    <div class="card"><h3>Ratings <small>${rated.length?`${rated.length} rated · average ${avgR.toFixed(1)} ★`:''}</small></h3>${topR.length?topR.map(f=>`<button class="rec" data-act="open" data-id="${f.id}"><span style="color:var(--warm-ink);letter-spacing:1px">${'★'.repeat(f.rating)}</span><span>${apShow(f.from).iata} → ${apShow(f.to).iata} · ${fmtDate(f.date,{month:'short',year:'numeric'})}</span></button>`).join(''):'<div style="color:var(--fg2)">Rate a flight to see your favourites here.</div>'}</div>
+   ${loungeCard(L)}
    <div class="card"><h3>Cabin</h3>${bars(cls)}</div>
    ${seats.length?`<div class="card"><h3>Seat position</h3>${bars(seats)}</div>`:''}
    <div class="card"><h3>Purpose</h3>${bars(why)}</div>
@@ -716,10 +855,12 @@ function vSettings(){
    <div class="gt">Profile</div><div class="grp"><div class="row"><label for="set-name">Name</label><input id="set-name" placeholder="Your name" value="${esc(cfg.name||'')}" autocomplete="given-name"></div></div>
    <div class="hint">Shown on your passport card. English letters work best.</div>
    <div class="gt">Units</div><div class="grp"><div class="row"><span>Distance</span><div class="seg" data-seg="units"><button data-v="km" aria-pressed="${cfg.units==='km'}">Kilometres</button><button data-v="mi" aria-pressed="${cfg.units==='mi'}">Miles</button></div></div></div>
+   <div class="gt">Appearance</div><div class="grp"><div class="row"><span>Theme</span><div class="seg" data-seg="theme"><button data-v="auto" aria-pressed="${(cfg.theme||'auto')==='auto'}">Auto</button><button data-v="light" aria-pressed="${cfg.theme==='light'}">Light</button><button data-v="dark" aria-pressed="${cfg.theme==='dark'}">Dark</button></div></div></div>
    <div class="gt">Backup and import</div><div class="grp">
-    <button class="row link" data-act="export-json"><span>Export backup (JSON)</span><span class="val">with photos</span></button>
+    <button class="row link" data-act="export-json"><span>Export backup (JSON)</span><span class="val">${cfg.lastBackup?'last: '+fmtDate(new Date(cfg.lastBackup).toISOString().slice(0,10)):'never backed up'}</span></button>
     <button class="row link" data-act="export-csv"><span>Export flights (CSV)</span><span class="val">FlightDiary format</span></button>
-    <button class="row link" data-act="import"><span>Import CSV or backup</span><span class="val"></span></button>
+    ${flights.some(isFut)?`<button class="row link" data-act="ics"><span>Export upcoming flights</span><span class="val">for Calendar (.ics)</span></button>`:''}
+    <button class="row link" data-act="import"><span>Import CSV or backup</span><span class="val">FlightDiary, Flighty</span></button>
     ${SEED?`<button class="row link" data-act="seed"><span>Load my FlightDiary export</span><span class="val">${csvToFlights(SEED).list.length} flights</span></button>`:''}</div>
    <div class="hint">Flights are stored only in this browser on this device. Clearing Safari website data deletes them, so export a backup now and then. Importing skips flights that are already in the log.</div>
    <div class="gt">Data</div><div class="grp"><button class="row" id="wipe" data-act="wipe" style="color:var(--bad)"><span>Delete all flights</span></button></div>
@@ -727,21 +868,44 @@ function vSettings(){
    <div class="hint" style="text-align:center">${flights.length} flight${flights.length===1?'':'s'} · ${AP.length.toLocaleString('en-US')} airports built in</div></div></div>`}
 
 /* ---------- map ---------- */
-const M={mode:'flat',year:'all',t:null,rot:[0,-25],gk:1,sel:null};
+const M={mode:'flat',year:'all',t:null,rot:[0,-25],gk:1,sel:null,filter:{},color:'none',ti:null,playing:false};
 function vMap(){
   const years=[...new Set(flights.map(f=>f.date.slice(0,4)))].sort().reverse();
   if(M.year!=='all'&&!years.includes(M.year))M.year='all';
+  const nf=Object.values(M.filter).filter(Boolean).length+(M.color!=='none'?1:0);
   return `<div id="mapwrap"><svg id="mapsvg" role="img" aria-label="Map of your flights"><path id="m-sphere" fill="var(--ocean)"/><path id="m-grat" fill="none" stroke="var(--grat)" stroke-width=".6"/><path id="m-land" fill="var(--land)" stroke="none"/><path id="m-vis" fill="var(--data)" fill-opacity=".4" stroke="none"/><path id="m-bord" fill="none" stroke="var(--border)" stroke-width=".5"/><g id="m-arcs"></g><g id="m-dots"></g></svg>
-   <div class="mtop"><div class="hrow"><div class="mtitle pill">Map</div><div class="mseg pill" data-seg="mapmode"><button data-v="flat" aria-pressed="${M.mode==='flat'}">Flat</button><button data-v="globe" aria-pressed="${M.mode==='globe'}">Globe</button></div></div>
+   <div class="mtop"><div class="hrow"><div class="mtitle pill">Map</div><div style="display:flex;gap:8px;align-items:center"><button class="pill fbtn" data-act="mapfilter">${ic('gear')}Filters${nf?` · ${nf}`:''}</button><div class="mseg pill" data-seg="mapmode"><button data-v="flat" aria-pressed="${M.mode==='flat'}">Flat</button><button data-v="globe" aria-pressed="${M.mode==='globe'}">Globe</button></div></div></div>
     <div class="chips"><button data-my="all" aria-pressed="${M.year==='all'}">All</button>${years.map(y=>`<button data-my="${y}" aria-pressed="${M.year===y}">${y}</button>`).join('')}</div></div>
    ${M.mode==='globe'?`<div class="zoom pill"><button data-act="gzin" aria-label="Zoom in">+</button><button data-act="gzout" aria-label="Zoom out">−</button></div>`:''}
-   <div class="mbot"><div id="msel"></div><div class="msum pill" id="msum"></div></div></div>`}
+   <div class="mbot"><div id="msel"></div><div id="mleg"></div><div class="mtime pill" id="mtime" hidden><button data-act="mplay" id="mplay" aria-label="Play timeline">${ic('play')}</button><input type="range" id="mscrub" min="0" max="1" value="1" aria-label="Timeline"><span id="mdate"></span></div><div class="msum pill" id="msum"></div></div></div>`}
+function mapFlights(){return flights.filter(f=>(M.year==='all'||f.date.startsWith(M.year))&&(!M.filter.airline||airKey(f)===M.filter.airline)&&(!M.filter.cls||String(f.cls)===M.filter.cls)&&(!M.filter.trip||f.trip===M.filter.trip)&&(!M.filter.family||acFamily(f)===M.filter.family))}
+const mapDates=()=>[...new Set(mapFlights().map(f=>f.date))].sort();
+const yearHue=y=>{const ys=flights.map(f=>+f.date.slice(0,4));const a=Math.min(...ys),b=Math.max(...ys);return 215-190*(b===a?1:(y-a)/(b-a))};
+function routeColor(r){if(M.color==='year')return `hsl(${yearHue(Math.max(...r.fl.map(f=>+f.date.slice(0,4))))} 78% 55%)`;if(M.color==='airline')return `hsl(${hue(airKey(r.fl[r.fl.length-1]))} 72% 55%)`;return null}
+function setPlayIcon(){const b=$('#mplay');if(b)b.innerHTML=ic(M.playing?'pause':'play')}
+function stopPlay(){clearInterval(M._iv);M.playing=false;setPlayIcon()}
+function playMap(){if(M.playing){stopPlay();return}const dates=mapDates();if(dates.length<2)return;M.playing=true;if(M.ti==null||M.ti>=dates.length-1)M.ti=0;setPlayIcon();mapSetup();
+  M._iv=setInterval(()=>{if(!$('#mapwrap')){stopPlay();return}M.ti=(M.ti||0)+1;if(M.ti>=dates.length-1){M.ti=null;stopPlay()}mapSetup()},Math.max(140,Math.min(700,9000/dates.length)))}
+function setupTimeline(dates){const box=$('#mtime');if(!box)return;box.hidden=dates.length<2;const r=$('#mscrub');if(!r)return;r.max=Math.max(1,dates.length-1);r.value=M.ti==null?r.max:M.ti;
+  const d=dates[M.ti==null?dates.length-1:M.ti];$('#mdate').textContent=d?fmtDate(d,{month:'short',year:'numeric'}):''}
+function setupLegend(L){const el=$('#mleg');if(!el)return;if(M.color==='none'||!L.length){el.innerHTML='';return}
+  let items;if(M.color==='year'){const ys=[...new Set(L.map(f=>f.date.slice(0,4)))].sort();items=ys.map(y=>[`hsl(${yearHue(+y)} 78% 55%)`,y])}
+  else{const m=new Map();L.forEach(f=>{const k=airKey(f);if(k&&!m.has(k))m.set(k,f)});items=[...m.entries()].map(([k,f])=>[`hsl(${hue(k)} 72% 55%)`,f.airlineCode||(f.airline||k).slice(0,3).toUpperCase()])}
+  el.innerHTML=`<div class="mleg pill">${items.slice(0,8).map(([c,l])=>`<span><i style="background:${c}"></i>${esc(l)}</span>`).join('')}${items.length>8?`<span>+${items.length-8}</span>`:''}</div>`}
+function mapFilterSheet(){
+  const AN=airNames(flights),trips=[...new Set(flights.map(f=>f.trip).filter(Boolean))].sort(),fams=[...new Set(flights.map(acFamily).filter(Boolean))].sort(),cl=[...new Set(flights.map(f=>f.cls))].sort();
+  const opt=(v,l,cur)=>`<option value="${esc(v)}"${String(cur)===String(v)?' selected':''}>${esc(l)}</option>`;
+  const sel=(id,l,opts,cur)=>`<div class="row"><label for="${id}">${l}</label><select id="${id}">${opt('','All',cur)}${opts.map(([v,n])=>opt(v,n,cur)).join('')}</select></div>`;
+  openSheet(`<div class="shead"><button data-act="mfreset">Reset</button><b>Map filters</b><button data-act="mfdone">Done</button></div>
+   <div class="sbody"><div class="wrap"><div class="grp">${sel('mf-air','Airline',[...AN.entries()].sort((a,b)=>a[1].localeCompare(b[1])),M.filter.airline||'')}${sel('mf-cls','Class',cl.map(c=>[c,CLS[c]||c]),M.filter.cls||'')}${sel('mf-fam','Aircraft',fams.map(x=>[x,x]),M.filter.family||'')}${trips.length?sel('mf-trip','Trip',trips.map(x=>[x,x]),M.filter.trip||''):''}</div>
+   <div class="gt">Route colours</div><div class="grp"><div class="row"><label for="mf-col">Colour by</label><select id="mf-col">${opt('none','Single colour',M.color)}${opt('year','Year',M.color)}${opt('airline','Airline',M.color)}</select></div></div></div></div>`)}
 let MR=null;
 function mapSetup(){
   const wrap=$('#mapwrap');if(!wrap||!window.d3)return;
   const W=wrap.clientWidth||360,H=wrap.clientHeight||520;
   const svg=d3.select('#mapsvg').attr('viewBox',`0 0 ${W} ${H}`);
-  const L=flights.filter(f=>M.year==='all'||f.date.startsWith(M.year));
+  const base=mapFlights(),dates=[...new Set(base.map(f=>f.date))].sort();if(M.ti!=null&&M.ti>=dates.length)M.ti=null;
+  const L=M.ti==null?base:base.filter(f=>f.date<=dates[M.ti]);
   const rm=new Map(),dots=new Map();
   L.forEach(f=>{const a=apOf(f.from),b=apOf(f.to);if(a)dots.set(a.iata,(dots.get(a.iata)||0)+1);if(b)dots.set(b.iata,(dots.get(b.iata)||0)+1);
     if(!a||!b||a===b)return;const k=[a.iata,b.iata].sort().join('-');const r=rm.get(k)||{k,a,b,fl:[]};r.fl.push(f);rm.set(k,r)});
@@ -769,7 +933,7 @@ function mapSetup(){
     else{proj.scale(R()).translate([W/2,(H-190)/2+150]).rotate([M.rot[0],M.rot[1]])}
     svg.select('#m-sphere').attr('d',path({type:'Sphere'}));svg.select('#m-grat').attr('d',path(grat));
     if(land){svg.select('#m-land').attr('d',path(land));svg.select('#m-bord').attr('d',path(bord));svg.select('#m-vis').attr('d',path(visFeat))}
-    arcs.select('.line').attr('d',d=>path(d.geo)).attr('stroke',d=>d.up||M.sel===d.k?'var(--warm)':'var(--data)').attr('stroke-dasharray',d=>d.up?'6 6':null).attr('stroke-width',d=>M.sel===d.k?2.6:Math.min(3,1.2+d.fl.length*.25)).attr('opacity',d=>M.sel&&M.sel!==d.k?.35:.85);
+    arcs.select('.line').attr('d',d=>path(d.geo)).attr('stroke',d=>d.up||M.sel===d.k?'var(--warm)':(routeColor(d)||'var(--data)')).attr('stroke-dasharray',d=>d.up?'6 6':null).attr('stroke-width',d=>M.sel===d.k?2.6:Math.min(3,1.2+d.fl.length*.25)).attr('opacity',d=>M.sel&&M.sel!==d.k?.35:.85);
     arcs.select('.hit').attr('d',d=>path(d.geo));
     const c=flat?null:[-M.rot[0],-M.rot[1]];
     dg.each(function(d){const p=proj([d.lon,d.lat]);const vis=p&&(flat||d3.geoDistance(c,[d.lon,d.lat])<Math.PI/2-.02);const g=d3.select(this).style('display',vis?null:'none');if(!vis)return;
@@ -787,10 +951,76 @@ function mapSetup(){
       M.t=d3.zoomIdentity.translate(W/2-k*(x0+x1)/2,(150+(H-120))/2-k*(y0+y1)/2).scale(k)}
     svg.call(z.transform,M.t)}
   else svg.call(d3.drag().on('drag',e=>{M.rot[0]+=e.dx*.35/M.gk;M.rot[1]=Math.max(-85,Math.min(85,M.rot[1]-e.dy*.35/M.gk));draw()}));
-  MR={draw};selCard();draw()}
+  MR={draw};selCard();draw();setupTimeline(dates);setupLegend(L)}
+
+/* ---------- stats extras ---------- */
+function loungeCard(L){
+  const V=L.filter(f=>f.loungeName);if(!V.length)return '';
+  const top=count(V,f=>`${f.loungeName} · ${loungeCode(f)}`).slice(0,6),acc=count(V,f=>f.loungeAccess?ACC[f.loungeAccess]:''),n=new Set(V.map(f=>f.loungeName+'|'+loungeCode(f))).size;
+  return `<div class="card"><h3>Lounges <small>${V.length} visit${V.length>1?'s':''} · ${Math.round(V.length/L.length*100)}% of flights</small></h3>${bars(top)}
+   ${acc.length?`<div style="font-size:0.735rem;color:var(--fg2);margin:10px 0 2px">How you got in</div>${bars(acc)}`:''}<div style="font-size:0.735rem;color:var(--fg2);margin-top:6px">${n} different lounge${n>1?'s':''}</div></div>`}
+function cumCard(L){
+  if(S.sy!=='all'||L.length<2)return '';
+  const s=[...L].sort((a,b)=>a.date.localeCompare(b.date));let tot=0;const pts=s.map(f=>{tot+=fx(f).km;return[new Date(f.date+'T12:00:00').getTime(),tot]});
+  const t0=pts[0][0],t1=pts[pts.length-1][0];if(t1===t0)return '';
+  const W=340,H=160,pl=40,pr=12,pt=12,pb=24,mx=Math.max(tot,40075);
+  const X=v=>pl+(v-t0)/(t1-t0)*(W-pl-pr),Y=v=>H-pb-v/mx*(H-pt-pb);
+  let d=`M${X(t0)},${Y(0)}`,pv=0;pts.forEach(([tm,v])=>{d+=`L${X(tm)},${Y(pv)}L${X(tm)},${Y(v)}`;pv=v});d+=`L${X(t1)},${Y(pv)}`;
+  const area=d+`L${X(t1)},${Y(0)}Z`;let grid='';for(let k=1;k*40075<=mx*1.001;k++)grid+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(k*40075)}" y2="${Y(k*40075)}" stroke="var(--line)" stroke-dasharray="3 4"/><text x="${pl-6}" y="${Y(k*40075)+4}" text-anchor="end" font-size="11" fill="var(--fg2)">${k}×</text>`;
+  const y0=new Date(t0).getFullYear(),y1=new Date(t1).getFullYear();
+  return `<div class="card"><h3>Distance over time <small>${fmtNum(distVal(tot))} ${distUnit()}</small></h3><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative distance flown over time, with lines for each trip around the Earth">${grid}<path d="${area}" fill="var(--data)" fill-opacity=".16"/><path d="${d}" fill="none" stroke="var(--data)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="${X(t1)}" cy="${Y(tot)}" r="4" fill="var(--data)"/><text x="${pl}" y="${H-6}" font-size="11" fill="var(--fg2)">${y0}</text><text x="${W-pr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--fg2)">${y1}</text></svg><div style="font-size:0.735rem;color:var(--fg2);margin-top:2px">Each dashed line is one trip around the Earth (40,075 km).</div></div>`}
+function heatCard(L){
+  if(!L.length)return '';const by=new Map();L.forEach(f=>by.set(f.date,(by.get(f.date)||0)+1));const lvl=n=>n>=3?3:n;
+  if(S.sy!=='all'){const y=+S.sy,off=(new Date(y,0,1).getDay()+6)%7,cells=[];for(let i=0;i<off;i++)cells.push('<i class="e"></i>');
+    const days=((y%4===0&&y%100!==0)||y%400===0)?366:365;
+    for(let d=0;d<days;d++){const dt=new Date(y,0,1+d),key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'),n=by.get(key)||0;cells.push(`<i class="l${lvl(n)}" title="${key}${n?': '+n:''}"></i>`)}
+    return `<div class="card"><h3>Flying days <small>${by.size} day${by.size===1?'':'s'} in ${y}</small></h3><div class="hm" style="--w:${Math.ceil(cells.length/7)}" role="img" aria-label="Calendar of days you flew in ${y}">${cells.join('')}</div></div>`}
+  const years=[...new Set(L.map(f=>f.date.slice(0,4)))].sort().reverse();
+  const rows=years.map(y=>{const m=Array(12).fill(0);L.filter(f=>f.date.startsWith(y)).forEach(f=>m[+f.date.slice(5,7)-1]++);
+    return `<div class="hmy"><span>${y}</span><div class="hm12">${m.map((n,i)=>`<i class="l${lvl(n)}" title="${y}-${String(i+1).padStart(2,'0')}${n?': '+n:''}"></i>`).join('')}</div></div>`}).join('');
+  return `<div class="card"><h3>Flying months</h3><div class="hmy hmh"><span></span><div class="hm12">${'JFMAMJJASOND'.split('').map(x=>`<b>${x}</b>`).join('')}</div></div>${rows}</div>`}
+const wish=LS.get('fl.wish',[]);
+const allCountries=()=>[...new Set(AP.map(a=>a.country).filter(Boolean))].sort();
+function bucketCard(){
+  const vis=new Set();flights.filter(f=>!isFut(f)).forEach(f=>[f.from,f.to].forEach(c=>{const a=apOf(c);if(a&&a.country)vis.add(a.country)}));
+  const pct=Math.min(100,vis.size/195*100);
+  return `<div class="card"><h3>World <small>${vis.size} of 195 countries</small></h3><div class="bar" style="margin-top:2px"><span class="tr"><i style="width:${Math.max(2,pct)}%"></i></span></div>
+   <div style="font-size:0.735rem;color:var(--fg2);margin:4px 0 10px">${pct.toFixed(1)}% of the world. Add places you want to visit.</div>
+   <div class="tags">${wish.map(c=>`<span class="chip${vis.has(c)?' done':''}">${vis.has(c)?'✓ ':''}${esc(c)}<button data-act="rmwish" data-c="${esc(c)}" aria-label="Remove ${esc(c)}" style="margin-left:6px;font-size:1rem;line-height:1">×</button></span>`).join('')||'<span style="color:var(--fg2);font-size:0.824rem">Your bucket list is empty.</span>'}</div>
+   <div class="wrow"><input id="wish-in" list="dl-wish" placeholder="Add a country" autocomplete="off"><button class="btn sm" data-act="addwish">Add</button></div>
+   <datalist id="dl-wish">${allCountries().map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>`}
+
+/* ---------- year in review ---------- */
+const ST={i:0,n:0};
+function homeCode(){const c=new Map();flights.filter(f=>!isFut(f)).forEach(f=>[f.from,f.to].forEach(x=>c.set(x,(c.get(x)||0)+1)));const t=[...c.entries()].sort((a,b)=>b[1]-a[1])[0];return t?t[0]:null}
+function showSlide(i){ST.i=Math.max(0,Math.min(ST.n-1,i));$$('.story .sl').forEach((s,k)=>s.classList.toggle('on',k===ST.i));$$('.sprog span').forEach((s,k)=>s.classList.toggle('on',k<=ST.i))}
+function wrappedSheet(y){
+  y=String(y);const L=flights.filter(f=>!isFut(f)&&f.date.startsWith(y));if(!L.length){toast('No flights in '+y);return}
+  const X=L.map(f=>({f,...fx(f)})),km=X.reduce((s,x)=>s+x.km,0),min=X.reduce((s,x)=>s+x.min,0),home=homeCode();
+  const apc=new Map();X.forEach(x=>[x.f.from,x.f.to].forEach(c=>{if(c!==home)apc.set(c,(apc.get(c)||0)+1)}));
+  const topAp=[...apc.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3);
+  const AN=airNames(L),airTop=count(L,airKey)[0],acTop=count(L,f=>f.aircraft)[0];
+  const cn=new Map();X.forEach(x=>[x.a,x.b].forEach(a=>a&&a.country&&cn.set(a.country,(cn.get(a.country)||0)+1)));
+  const flags=[...cn.entries()].sort((a,b)=>b[1]-a[1]).map(e=>flagOf(e[0])).filter(Boolean);
+  const conts=new Set();X.forEach(x=>[x.a,x.b].forEach(a=>{const c=contOf(a);if(c)conts.add(c)}));
+  const lg=[...X].sort((a,b)=>b.km-a.km)[0];
+  const mo=Array(12).fill(0);L.forEach(f=>mo[+f.date.slice(5,7)-1]++);const bm=mo.indexOf(Math.max(...mo)),mx=Math.max(...mo);
+  const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const PV=flights.filter(f=>!isFut(f)&&f.date.startsWith(String(+y-1)));const earth=km/40075;
+  const slides=[
+    `<small class="k">Your year in the air</small><div class="huge">${y}</div><p>${L.length} flight${L.length===1?'':'s'}${PV.length?`, ${L.length>=PV.length?L.length-PV.length+' more':PV.length-L.length+' fewer'} than in ${+y-1}`:''}.</p>`,
+    `<small class="k">Distance</small><div class="huge">${fmtNum(distVal(km))}</div><div class="big2">${distUnit()}</div><p>${earth>=.1?`That is ${earth.toFixed(earth<10?1:0)}× around the Earth. `:''}${fmtTot(min)} in the air.</p>`,
+    `<small class="k">Where you went</small>${topAp.length?topAp.map(([c,n])=>{const a=apShow(c);return `<div class="rowap"><b>${esc(a.iata)}</b><span>${esc(a.city)}<br><em>${n} visit${n>1?'s':''}</em></span></div>`}).join(''):`<div class="big2">Round trips from ${esc(apShow(home).city)}</div>`}`,
+    `<small class="k">Countries</small><div class="huge">${cn.size}</div><div class="flags">${flags.slice(0,10).join(' ')}</div><p>${conts.size?`Across ${conts.size} continent${conts.size>1?'s':''}: ${[...conts].join(', ')}.`:''}</p>`,
+    `<small class="k">Your favourites</small>${airTop?`<div class="big2">${esc(AN.get(airTop[0])||airTop[0])}</div><p>${airTop[1]} flight${airTop[1]>1?'s':''}</p>`:''}${acTop?`<div class="big2" style="margin-top:12px">${esc(acTop[0])}</div><p>${acTop[1]} flight${acTop[1]>1?'s':''}</p>`:''}${lg&&lg.km?`<p style="margin-top:14px">Longest: ${esc(apShow(lg.f.from).iata)} to ${esc(apShow(lg.f.to).iata)}, ${fmtDist(lg.km)}</p>`:''}${L.some(f=>f.loungeName)?`<p style="margin-top:6px">Lounge visits: ${L.filter(f=>f.loungeName).length}</p>`:''}`,
+    `<small class="k">Busiest month</small><div class="big2">${MN[bm]}</div><p>${mo[bm]} flight${mo[bm]>1?'s':''}</p><div class="mbars">${mo.map((n,i)=>`<i class="${i===bm?'hi':''}" style="height:${Math.max(4,n/mx*100)}%"></i>`).join('')}</div>`,
+    `<div class="big2">That is a wrap on ${y}.</div><p>Share your passport, or keep flying.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" data-act="storyshare" data-y="${y}">Share passport</button><button class="btn sm" data-act="close">Done</button></div>`];
+  ST.n=slides.length;ST.i=0;
+  openSheet(`<div class="story" data-kind="story"><div class="sprog">${slides.map(()=>'<span></span>').join('')}</div><button class="sx" data-act="close" aria-label="Close">×</button>${slides.map((s,i)=>`<section class="sl g${i%3}" data-i="${i}">${s}</section>`).join('')}<button class="sprev" data-act="sprev" aria-label="Previous"></button><button class="snext" data-act="snext" aria-label="Next"></button></div>`);
+  showSlide(0)}
 
 /* ---------- airline logo in lists ---------- */
-function airLead(L,name){const f=L.find(x=>x.airline===name&&x.airlineCode)||L.find(x=>x.airline===name)||{airline:name};
+function airLead(L,key){const f=L.find(x=>airKey(x)===key&&x.airlineCode)||L.find(x=>airKey(x)===key)||{airline:key};const name=f.airline||key;
   const l=logoOf(f);const sz='width:22px;min-width:22px;height:22px';
   return l?`<img class="al logo" src="${l}" alt="" style="${sz}">`:`<span class="al" style="--h:${hue(f.airlineCode||name)};${sz};font-size:0.647rem">${esc(f.airlineCode||name.slice(0,2).toUpperCase())}</span>`}
 
@@ -820,7 +1050,7 @@ function achCard(){
   const PF=flights.filter(f=>!isFut(f)),X=PF.map(f=>({f,...fx(f)}));
   const tot=X.reduce((s,x)=>s+x.km,0),mins=X.reduce((s,x)=>s+x.min,0),n=PF.length;
   const ctr=new Set();X.forEach(x=>[x.a,x.b].forEach(a=>a&&a.country&&ctr.add(a.country)));
-  const al=new Set(PF.map(f=>f.airline).filter(Boolean)),ac=new Set(PF.map(f=>f.aircraft).filter(Boolean));
+  const al=new Set(PF.map(airKey).filter(Boolean)),ac=new Set(PF.map(f=>f.aircraft).filter(Boolean));
   const maxMin=Math.max(0,...X.map(x=>x.min)),maxKm=Math.max(0,...X.map(x=>x.km));
   const perY={};PF.forEach(f=>perY[f.date.slice(0,4)]=(perY[f.date.slice(0,4)]||0)+1);const bestY=Math.max(0,...Object.values(perY));
   const A=(t,d,ico,cur,tgt)=>({t,d,ico,cur:Math.min(cur,tgt),tgt});
@@ -830,7 +1060,8 @@ function achCard(){
    A('Airline sampler','Fly 5 different airlines','trophy',al.size,5),A('Airline collector','Fly 10 different airlines','trophy',al.size,10),A('Aircraft spotter','Fly 10 aircraft types','trophy',ac.size,10),
    A('Long haul','A flight of 8 hours or more','chart',maxMin,480),A('Intercontinental','A flight of 5,000 km or more','chart',maxKm,5000),A('Busy year','10 flights in one year','chart',bestY,10),
    A('Up front','Fly Business or First','star',PF.some(f=>f.cls===2||f.cls===3)?1:0,1),A('A day in the sky','24 hours in the air','plane',mins,1440),A('A week in the sky','168 hours in the air','plane',mins,10080),
-   A('Photographer','Add a photo to a flight','cam',PF.some(f=>(f.photos||[]).length)?1:0,1),A('Critic','Rate 5 flights','star',PF.filter(f=>f.rating).length,5)];
+   A('Photographer','Add a photo to a flight','cam',PF.some(f=>(f.photos||[]).length)?1:0,1),A('Critic','Rate 5 flights','star',PF.filter(f=>f.rating).length,5),
+   A('Lounge regular','5 lounge visits','star',PF.filter(f=>f.loungeName).length,5),A('Lounge hopper','5 different lounges','trophy',new Set(PF.filter(f=>f.loungeName).map(f=>f.loungeName+'|'+loungeCode(f))).size,5)];
   const done=L.filter(a=>a.cur>=a.tgt),rest=L.filter(a=>a.cur<a.tgt).sort((a,b)=>b.cur/b.tgt-a.cur/a.tgt);
   const it=a=>{const ok=a.cur>=a.tgt;return `<div class="ach ${ok?'on':''}"><span class="medal">${ic(a.ico)}</span><b>${a.t}</b><small>${ok?a.d:Math.min(99,Math.floor(a.cur/a.tgt*100))+'% · '+a.d}</small></div>`};
   return `<div class="card"><h3>Achievements <small>${done.length} of ${L.length} · all time</small></h3><div class="achs">${done.concat(rest).map(it).join('')}</div></div>`}
@@ -855,7 +1086,7 @@ function drawPassport(cv,list,label,uv){
   const X=list.map(f=>({f,...fx(f)})),km=X.reduce((s,x)=>s+x.km,0),mins=X.reduce((s,x)=>s+x.min,0);
   const apc=new Map();X.forEach(x=>[x.f.from,x.f.to].forEach(cd=>apc.set(cd,(apc.get(cd)||0)+1)));
   const apSorted=[...apc.entries()].sort((a,b)=>b[1]-a[1]);const home=apSorted.length?apShow(apSorted[0][0]).iata:'---';
-  const airN=new Set(list.map(f=>f.airline).filter(Boolean)).size;
+  const airN=new Set(list.map(airKey).filter(Boolean)).size;
   const cn=new Map();X.forEach(x=>[x.a,x.b].forEach(a=>a&&a.country&&cn.set(a.country,(cn.get(a.country)||0)+1)));
   const flags=[...cn.entries()].sort((a,b)=>b[1]-a[1]).map(e=>flagOf(e[0])).filter(Boolean);
   const dom=X.filter(x=>x.a&&x.b&&x.a.country&&x.a.country===x.b.country).length,lh=X.filter(x=>x.min>=360).length;
@@ -965,19 +1196,23 @@ let SW=null;
 document.addEventListener('touchstart',e=>{const r=e.target.closest('.srow');if(SW&&SW.el!==r){SW.el.classList.remove('open');SW.el.style.setProperty('--tx','0px');SW=null}if(!r)return;const t=e.touches[0];SW={el:r,x:t.clientX,y:t.clientY,dx:0,lock:null,open:r.classList.contains('open')}},{passive:true});
 document.addEventListener('touchmove',e=>{if(!SW)return;const t=e.touches[0],dx=t.clientX-SW.x,dy=t.clientY-SW.y;if(SW.lock==null&&(Math.abs(dx)>8||Math.abs(dy)>8))SW.lock=Math.abs(dx)>Math.abs(dy)?'x':'y';if(SW.lock!=='x')return;const v=Math.max(-152,Math.min(0,(SW.open?-152:0)+dx));SW.dx=v;const c=SW.el.querySelector('.crow');c.style.transition='none';SW.el.classList.add('sw');SW.el.style.setProperty('--tx',v+'px')},{passive:true});
 document.addEventListener('touchend',()=>{if(!SW)return;const c=SW.el.querySelector('.crow');c.style.transition='';if(SW.lock==='x'){const o=SW.dx<-70;SW.el.classList.toggle('open',o);if(!o){const r=SW.el;setTimeout(()=>r.classList.remove('sw'),220)}SW.el.style.setProperty('--tx',o?'-152px':'0px');SW.swiped=Date.now();SW.open=o}},{passive:true});
-document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&D)D[k]=+e.target.value});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&D)D[k]=+e.target.value;
+  if(e.target.id==='f-lon'){const b=$('#lounge-fields');if(b)b.hidden=!e.target.checked}
+  if(e.target.id==='f-lat')loungeSuggest()});
 document.addEventListener('click',async e=>{
   const t=e.target;
   if(SW&&SW.swiped&&Date.now()-SW.swiped<350){e.preventDefault();return}
   const op=t.closest('.srow.open');if(op&&!t.closest('.swa')){op.classList.remove('open');op.style.setProperty('--tx','0px');SW=null;return}
   const tab=t.closest('[data-tab]');if(tab){setTab(tab.dataset.tab);return}
-  const so=t.closest('[data-sort]');if(so){const k=so.dataset.sort;if(S.sort===k)S.dir=S.dir==='desc'?'asc':'desc';else{S.sort=k;S.dir=k==='date'?'desc':'asc'}render(true);return}
+  const so=t.closest('[data-sort]');if(so){const k=so.dataset.sort;if(S.sort===k)S.dir=S.dir==='desc'?'asc':'desc';else{S.sort=k;S.dir=(k==='date'||k==='trip')?'desc':'asc'}render(true);return}
   const sy=t.closest('[data-sy]');if(sy){S.sy=sy.dataset.sy;render();return}
   const my=t.closest('[data-my]');if(my){M.year=my.dataset.my;M.sel=null;render();return}
   const sg=t.closest('[data-seg] [data-v]');
   if(sg){const grp=sg.parentElement.dataset.seg,v=sg.dataset.v;
     if(grp==='view'){S.view=v;LS.set('fl.view',v);render(true);return}
     if(grp==='rankby'){S.by=v;render(true);return}
+    if(grp==='acf'){S.acf=v;render(true);return}
+    if(grp==='theme'){cfg.theme=v;persistCfg();applyTheme();render(true);return}
     if(grp==='units'){cfg.units=v;persistCfg();render();return}
     if(grp==='mapmode'){M.mode=v;M.t=d3.zoomIdentity;M.sel=null;render();return}
     if(D&&grp in D){D[grp]=+v;$$('[data-seg="'+grp+'"] button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));return}}
@@ -999,6 +1234,19 @@ document.addEventListener('click',async e=>{
     case 'export-json':exportJSON();break;
     case 'export-csv':if(!flights.length){toast('No flights to export yet');break}saveFile(`flights-${new Date().toISOString().slice(0,10)}.csv`,flightsToCSV());break;
     case 'wipe':confirmWipe();break;
+    case 'return':{const f=flights.find(x=>x.id===id);if(!f)break;closeSheet();form(null,{from:f.to,to:f.from,date:f.date,airline:f.airline,airlineCode:f.airlineCode||'',airlineIcao:f.airlineIcao||'',cls:f.cls,why:f.why,trip:f.trip||''});break}
+    case 'ics':{const list=id?flights.filter(x=>x.id===id):flights.filter(isFut);if(!list.length){toast('No upcoming flights');break}saveFile(id?`flight-${list[0].date}.ics`:'uflightly-upcoming.ics',flightsToICS(list));break}
+    case 'mapfilter':mapFilterSheet();break;
+    case 'mfdone':{M.filter={airline:($('#mf-air')||{}).value||'',cls:($('#mf-cls')||{}).value||'',family:($('#mf-fam')||{}).value||'',trip:($('#mf-trip')||{}).value||''};M.color=($('#mf-col')||{}).value||'none';M.ti=null;M.sel=null;stopPlay();closeSheet();render();break}
+    case 'mfreset':['mf-air','mf-cls','mf-fam','mf-trip'].forEach(i=>{const e=$('#'+i);if(e)e.value=''});if($('#mf-col'))$('#mf-col').value='none';break;
+    case 'mplay':playMap();break;
+    case 'wrapped':wrappedSheet(a.dataset.y);break;
+    case 'snext':if(ST.i<ST.n-1)showSlide(ST.i+1);break;
+    case 'sprev':showSlide(ST.i-1);break;
+    case 'storyshare':S.sy=a.dataset.y;closeSheet();render();shareSheet();break;
+    case 'addwish':{const v=($('#wish-in').value||'').trim(),hit=allCountries().find(c=>c.toLowerCase()===v.toLowerCase());if(!hit){toast('Choose a country from the list');break}if(!wish.includes(hit)){wish.push(hit);LS.set('fl.wish',wish)}render(true);break}
+    case 'rmwish':{const i=wish.indexOf(a.dataset.c);if(i>=0){wish.splice(i,1);LS.set('fl.wish',wish)}render(true);break}
+    case 'snooze':cfg.backupSnooze=Date.now()+7*864e5;persistCfg();render(true);break;
     case 'cancelform':requestCloseForm();break;
     case 'goals':goalSheet();break;
     case 'savegoal':saveGoal();break;
@@ -1013,11 +1261,14 @@ document.addEventListener('input',e=>{
   if(e.target.id==='set-name'){cfg.name=e.target.value;persistCfg()}
   if(e.target.id==='q'){S.q=e.target.value;$('#list').innerHTML=listHtml()}
   if(e.target.id==='f-airline'&&D){const k=AIRLINES.find(a=>a[0].toLowerCase()===e.target.value.toLowerCase());if(k&&!$('#f-code').value)$('#f-code').value=k[1]}
-  if(e.target.id==='f-h'||e.target.id==='f-m')estHint()});
+  if(['f-h','f-m','f-dep','f-arr','f-date'].includes(e.target.id))estHint();
+  if(e.target.id==='mscrub'){stopPlay();const v=+e.target.value;M.ti=v>=+e.target.max?null:v;mapSetup()}});
 $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;importText(await f.text())});
 $('#photofile').addEventListener('change',async e=>{const fs=[...e.target.files];e.target.value='';if(!D)return;
   for(const f of fs){const d=await shrink(f);if(d){const id='p'+uid();D._added[id]=d;D.photos.push(id)}}drawPhotos()});
 
+if('serviceWorker' in navigator){let had=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had){had=true;return}toast('A new version is ready',{label:'Reload',ms:20000,run:()=>location.reload()})})}
 render();
 </script>
 

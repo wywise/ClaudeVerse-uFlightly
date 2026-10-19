@@ -14,7 +14,7 @@ The artifact build embeds your FlightDiary export so the Load button works on fi
 Put your export at private/flightdiary.csv (or set FLIGHTDIARY_CSV). Optional fixes go in private/overrides.json.
 Neither file is ever copied into docs/.
 """
-import json, os, re, sys, zipfile
+import hashlib, json, os, re, sys, zipfile
 from pathlib import Path
 
 APP = "uFlightly"
@@ -68,15 +68,15 @@ MANIFEST = {
     "start_url": "./",
     "scope": "./",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#0C2748",
+    "background_color": "#0B0922",
+    "theme_color": "#2A1F7A",
     "icons": [
         {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
         {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
     ],
 }
 
-SW = """const V = 'uflightly-v1';
+SW = """const V = 'uflightly-__HASH__';
 const FILES = ['./', 'index.html', 'd3.min.js', 'topojson-client.min.js', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'manifest.webmanifest'];
 self.addEventListener('install', e => e.waitUntil(caches.open(V).then(c => c.addAll(FILES)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));
@@ -127,6 +127,15 @@ Everything is stored locally in your browser. Nothing is sent anywhere. Clearing
 python3 app/build/build.py site
 ```
 
+## Development
+
+```
+node app/tests/run.mjs               # unit tests and a syntax check of the built page
+python3 app/build/build.py site      # rebuild docs/ after editing app/src/app.template.html
+```
+
+Work happens on the `develop` branch. GitHub Actions runs the tests and checks that `docs/` matches the source.
+
 ## Credits
 
 - Airport data: [OpenFlights](https://openflights.org/data.html), available under the [Open Database License](https://opendatacommons.org/licenses/odbl/1-0/).
@@ -172,7 +181,11 @@ def build_site(template):
     assert not t.startswith("<title>"), "head not stripped"
     (dist / "index.html").write_text(HEAD + t + TAIL, encoding="utf8")
     (dist / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=2) + "\n", encoding="utf8")
-    (dist / "sw.js").write_text(SW, encoding="utf8")
+    h = hashlib.sha256((HEAD + t + TAIL).encode("utf8"))
+    for icon in sorted(dist.glob("icon-*.png")):
+        h.update(icon.read_bytes())
+    digest = h.hexdigest()[:10]
+    (dist / "sw.js").write_text(SW.replace("__HASH__", digest), encoding="utf8")
     (ROOT / "README.md").write_text(README, encoding="utf8")
     (dist / ".nojekyll").write_text("", encoding="utf8")
     for f in ("d3.min.js", "topojson-client.min.js", "icon-180.png", "icon-192.png", "icon-512.png"):
