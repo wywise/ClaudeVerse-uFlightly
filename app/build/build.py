@@ -68,8 +68,8 @@ MANIFEST = {
     "start_url": "./",
     "scope": "./",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#0C2748",
+    "background_color": "#0B0922",
+    "theme_color": "#2A1F7A",
     "icons": [
         {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
         {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
@@ -181,7 +181,10 @@ def build_site(template):
     assert not t.startswith("<title>"), "head not stripped"
     (dist / "index.html").write_text(HEAD + t + TAIL, encoding="utf8")
     (dist / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=2) + "\n", encoding="utf8")
-    digest = hashlib.sha256((HEAD + t + TAIL).encode("utf8")).hexdigest()[:10]
+    h = hashlib.sha256((HEAD + t + TAIL).encode("utf8"))
+    for icon in sorted(dist.glob("icon-*.png")):
+        h.update(icon.read_bytes())
+    digest = h.hexdigest()[:10]
     (dist / "sw.js").write_text(SW.replace("__HASH__", digest), encoding="utf8")
     (ROOT / "README.md").write_text(README, encoding="utf8")
     (dist / ".nojekyll").write_text("", encoding="utf8")
